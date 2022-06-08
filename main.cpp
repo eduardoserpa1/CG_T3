@@ -1,18 +1,12 @@
 // **********************************************************************
-// PUCRS/Escola Polit�cnica
-// COMPUTA��O GR�FICA
+// PUCRS/Escola Politecnica
+// COMPUTACAO GRAFICA
 //
-// Programa basico para criar aplicacoes 2D em OpenGL
+// Programa criado como solucao ao trabalho 3 da disciplina
 //
 // Marcio Sarroglia Pinho
 // pinho@pucrs.br
 // **********************************************************************
-
-// Para uso no Xcode:
-// Abra o menu Product -> Scheme -> Edit Scheme -> Use custom working directory
-// Selecione a pasta onde voce descompactou o ZIP que continha este arquivo.
-//
-
 
 // 	Integrantes:
 // 	Leonardo Gibrowski Faé - 20280524
@@ -152,7 +146,6 @@ Modelo monta_arquivo(string arquivo){
 	return modelo;
 }
 
-// **************************************************************
 void init()
 {
     CriaInimigos();
@@ -180,10 +173,6 @@ void animate()
     }
 }
 
-// **************************************************************
-//  void reshape( int w, int h )
-//  trata o redimensionamento da janela OpenGL
-// **************************************************************
 void reshape( int w, int h )
 {
     // Reset the coordinate system before modifying
@@ -197,17 +186,13 @@ void reshape( int w, int h )
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
-// ****************************************************************
 
-// ****************************************************************
 void CriaInimigos()
 {
-
 	inimigos.push_back(Inimigo(Ponto(-8, 12), 45, &inimigo1Mod));
 	inimigos.push_back(Inimigo(Ponto(8, 12), 90, &inimigo2Mod));
     inimigos.push_back(Inimigo(Ponto(-8, -12), 90, &inimigo3Mod));
     inimigos.push_back(Inimigo(Ponto(8, -12), 90, &inimigo4Mod));
-
 }
 
 void update_tiros(vector<Tiro> &tiros) {
@@ -222,22 +207,21 @@ void update_tiros(vector<Tiro> &tiros) {
 	}
 }
 
-// ****************************************************************
-//  void display( void )
-// ****************************************************************
 void display( void )
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-    // Define os limites l�gicos da �rea OpenGL dentro da Janela
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(90, 16.0 / 9.0, 0.01, 200);
+
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	// Coloque aqui as chamadas das rotinas que desenham os objetos
-	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	//
+	gluLookAt(0.0f, -10.0f,  5.0f,
+			  0.0f,  0.0f,   0.0f,
+			  0.0f,  1.0f,   0.0f);
 
 	if(player.vida <= 0) {
         lose.desenha();
@@ -279,6 +263,7 @@ void display( void )
 		++inim;
 	}
 
+	player.anda();
 	player.desenha();
 	--player.delay;
 
@@ -293,9 +278,6 @@ end:
 	glutSwapBuffers();
 }
 
-// ****************************************************************
-//  void keyboard ( unsigned char key, int x, int y )
-// ****************************************************************
 void keyboard ( unsigned char key, int, int) {
 	switch (key) {
 		case 27: exit(0); // ESC = termina o programa
@@ -303,9 +285,6 @@ void keyboard ( unsigned char key, int, int) {
 	}
 }
 
-// ****************************************************************
-//  void arrow_keys ( int a_keys, int x, int y )
-// ****************************************************************
 void arrow_keys ( int a_keys, int, int)
 {
 	// OBSERVACAO: As rotacoes presumem que o 'normal' eh
@@ -313,86 +292,38 @@ void arrow_keys ( int a_keys, int, int)
 	switch ( a_keys )
 	{
         case GLUT_KEY_LEFT:
-			player.rotacao = 0;
-			if (player.posicao.x > Min.x + player.raio_colisao)
-				player.posicao.x -= 0.2;
+			player.rotacao += 1.0f;
+			if (player.rotacao >= 360.0f)
+				player.rotacao = 0.0f;
             break;
         case GLUT_KEY_RIGHT:
-			player.rotacao = 180;
-			if (player.posicao.x < Max.x - player.raio_colisao)
-				player.posicao.x += 0.2;
+			player.rotacao -= 1.0f;
+			if (player.rotacao <= 0.0f)
+				player.rotacao = 360.0f;
             break;
-		case GLUT_KEY_UP:
-			player.rotacao = 270;
-			if (player.posicao.y < Max.y - player.raio_colisao)
-				player.posicao.y += 0.2;
-			break;
-	    case GLUT_KEY_DOWN:
-			player.rotacao = 90;
-			if (player.posicao.y > Min.y + player.raio_colisao)
-				player.posicao.y -= 0.2;
-			break;
-		default:
-			break;
 	}
 }
 
-// ****************************************************************
-//  void main ( int argc, char** argv )
-// ****************************************************************
 int  main ( int argc, char** argv )
 {
-    cout << "Programa OpenGL" << endl;
+    cout << "CG - T3" << endl;
 
 	srand (static_cast <unsigned> (time(0)));
 
     glutInit            ( &argc, argv );
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB );
     glutInitWindowPosition (0,0);
-
-    // Define o tamanho inicial da janela grafica do programa
     glutInitWindowSize  ( 650, 500);
+    glutCreateWindow    ( "CG - T3" );
 
-    // Cria a janela na tela, definindo o nome da
-    // que aparecera na barra de t�tulo da janela.
-    glutCreateWindow    ( "Transformacoes Geometricas em OpenGL" );
-
-    // executa algumas inicializa��es
     init ();
 
-    // Define que o tratador de evento para
-    // o redesenho da tela. A funcao "display"
-    // ser� chamada automaticamente quando
-    // for necess�rio redesenhar a janela
     glutDisplayFunc ( display );
-
-    // Define que o tratador de evento para
-    // o invalida��o da tela. A funcao "display"
-    // ser� chamada automaticamente sempre que a
-    // m�quina estiver ociosa (idle)
     glutIdleFunc(animate);
-
-    // Define que o tratador de evento para
-    // o redimensionamento da janela. A funcao "reshape"
-    // ser� chamada automaticamente quando
-    // o usu�rio alterar o tamanho da janela
     glutReshapeFunc ( reshape );
-
-    // Define que o tratador de evento para
-    // as teclas. A funcao "keyboard"
-    // ser� chamada automaticamente sempre
-    // o usu�rio pressionar uma tecla comum
     glutKeyboardFunc ( keyboard );
-
-    // Define que o tratador de evento para
-    // as teclas especiais(F1, F2,... ALT-A,
-    // ALT-B, Teclas de Seta, ...).
-    // A funcao "arrow_keys" ser� chamada
-    // automaticamente sempre o usu�rio
-    // pressionar uma tecla especial
     glutSpecialFunc ( arrow_keys );
 
-    // inicia o tratamento dos eventos
     glutMainLoop ( );
 
     return 0;

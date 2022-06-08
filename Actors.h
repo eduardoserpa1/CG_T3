@@ -17,8 +17,11 @@ class Tiro: public Instancia {
 class Player: public Instancia {
 	public:
 		int delay = 0;
+		const float speed = 1;
 		Player(Modelo *mod);
+
 		void atira(std::vector<Tiro> *tiro, Modelo *tiroMods);
+		void anda();
 };
 
 class Inimigo: public Instancia {

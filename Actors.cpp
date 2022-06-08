@@ -50,9 +50,14 @@ bool Tiro::foraDaAreaDeDesenho(Ponto max, Ponto min) {
 		|| this->posicao.x < min.x || this->posicao.y < min.y;
 }
 
-
 Player::Player(Modelo *mod) : Instancia(mod, 300) {
 	this->desenha_modelo = Desenha;
+}
+
+void Player::anda() {
+	float oposto = sin(this->rotacao * M_PI / 180) * 0.2;
+	float adjacente = cos(this->rotacao * M_PI / 180) * 0.2;
+	this->posicao = this->posicao - Ponto(adjacente, oposto);
 }
 
 Texto::Texto(Ponto pos, Ponto esc, Modelo *mod) : Instancia(mod, 1) {
