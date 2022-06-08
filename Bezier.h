@@ -12,7 +12,6 @@
 #include <iostream>
 using namespace std;
 
-
 #ifdef WIN32
 #include <windows.h>
 #include <glut.h>
@@ -28,21 +27,20 @@ using namespace std;
 
 #include "Ponto.h"
 
-class Bezier
-{
-    Ponto Coords[3];
+class Bezier {
+	Ponto Coords[3];
 
-public:
-    float ComprimentoTotalDaCurva;
-    int cor;
-    
-    Bezier(Ponto P0, Ponto P1, Ponto P2);
-    Bezier(Ponto V[]);
-    Ponto Calcula(double t);
-    Ponto getPC(int i);
-    void Traca();
-    double CalculaT(double distanciaPercorrida);
-    void calculaComprimentoDaCurva();
+    public:
+	float ComprimentoTotalDaCurva;
+	int cor;
+
+	Bezier(Ponto P0, Ponto P1, Ponto P2);
+	Bezier(Ponto V[]);
+	Ponto Calcula(double t);
+	Ponto getPC(int i);
+	void Traca();
+	double CalculaT(double distanciaPercorrida);
+	void calculaComprimentoDaCurva();
 };
 
-#endif 
+#endif

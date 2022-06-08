@@ -6,7 +6,6 @@
 //  Copyright © 2020 Márcio Sarroglia Pinho. All rights reserved.
 //
 
-
 #ifndef Instancia_hpp
 #define Instancia_hpp
 
@@ -26,29 +25,28 @@
 #include "Ponto.h"
 #include <vector>
 
-typedef struct Color{
+typedef struct Color {
 	double red = 0.0f;
 	double green = 0.0f;
 	double blue = 0.0f;
 } Color;
 
-typedef vector<vector<Color>> Modelo;
+typedef vector<vector<Color> > Modelo;
 
 class Instancia {
-private:
-    Modelo *modelo;
+    private:
+	Modelo *modelo;
 
-public:
+    public:
 	int vida;
-    Ponto posicao, escala;
-    float rotacao;
+	Ponto posicao, escala;
+	float rotacao;
 	float raio_colisao;
 
-    Instancia(Modelo *mod, int vida);
-    void (*desenha_modelo)(Modelo const *);
-    void desenha();
-	bool colide (Instancia const &i);
+	Instancia(Modelo *mod, int vida);
+	void (*desenha_modelo)(Modelo const *);
+	void desenha();
+	bool colide(Instancia const &i);
 };
-
 
 #endif /* Instancia_hpp */
