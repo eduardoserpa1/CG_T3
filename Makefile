@@ -1,8 +1,7 @@
 # Makefile para Linux e macOS
 
-PROG = Main
-#FONTES = Linha.cpp Ponto.cpp InterseccaoEntreLinhas.cpp Temporizador.cpp
-FONTES = Ponto.cpp Temporizador.cpp ListaDeCoresRGB.cpp Bezier.cpp Instancia.cpp Actors.cpp AnimacaoComBezier.cpp
+PROG = main
+FONTES = Ponto.cpp Temporizador.cpp ListaDeCoresRGB.cpp Bezier.cpp Instancia.cpp Actors.cpp main.cpp
 
 OBJETOS = $(FONTES:.cpp=.o)
 CPPFLAGS = -O3 -DGL_SILENCE_DEPRECATION -Wall -Wextra -g  # Todas as warnings, infos de debug
@@ -23,4 +22,4 @@ clean:
 	-@ rm -f $(OBJETOS) $(PROG)
 
 run:
-	./Main
+	./main
