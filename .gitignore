@@ -1,0 +1,5 @@
+*.o
+Main
+.vscode/
+.cache/
+compile_commands.json
