@@ -116,7 +116,7 @@ void Inimigo::anda(Ponto playerPos, Ponto max, Ponto min)
 				     playerPos);
 		this->deltaT = 0.0;
 	}
-	this->curva.Traca();
+	//this->curva.Traca();
 	this->deltaT += this->curva.CalculaT(0.1);
 	this->posicao = this->curva.Calcula(this->deltaT);
 	--this->delay;

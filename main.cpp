@@ -76,6 +76,7 @@ vector<Tiro> tirosPlayer;
 vector<Tiro> tirosInimigos;
 
 float min_x, min_y;
+float max_x, max_y;
 
 Ponto Min, Max;
 
@@ -156,6 +157,9 @@ void init()
 	min_x = -d;
 	min_y = -d;
 
+	max_x = d;
+	max_y = d;
+
 	Min = Ponto(-d, -d);
 	Max = Ponto(d, d);
 }
@@ -206,9 +210,14 @@ void update_tiros(vector<Tiro> &tiros)
 	}
 }
 
+float x = 0;
+float y = 0;
+float z = 0;
+
+
 void display(void)
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
@@ -217,7 +226,58 @@ void display(void)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(0.0f, -10.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+	
+	float distancia_camera = 3.0f;
+	float altura_camera = 3.0f;
+
+	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
+	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
+
+	if (oposto > distancia_camera || oposto < -distancia_camera) 
+		oposto = 0;
+	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
+		adjacente = 0;
+	
+
+	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
+				player.posicao.x, player.posicao.y, 0.0f, 	//center
+				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+
+	glColor3f(0.0f,1.0f,0.0f);
+
+	glLineWidth(2.0f);
+
+	glBegin(GL_LINE_STRIP);
+			glVertex2f(-3,-3);
+			glVertex2f(3,3);
+	glEnd();
+	
+	glBegin(GL_LINE_STRIP);
+			glVertex2f(-3,3);
+			glVertex2f(3,-3);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+			glVertex2f(min_x,min_y);
+			glVertex2f(max_x,min_y);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+			glVertex2f(min_x,min_y);
+			glVertex2f(min_x,max_y);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+			glVertex2f(max_x,max_y);
+			glVertex2f(max_x,min_y);
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+			glVertex2f(max_x,max_y);
+			glVertex2f(min_x,max_y);
+	glEnd();
+
 
 	if (player.vida <= 0) {
 		lose.desenha();
@@ -227,10 +287,12 @@ void display(void)
 		goto end;
 	}
 
+	/*
 	for (int i = 1; i < player.vida + 1; i++)
 		Texto(Ponto(min_x + (i * 1.3), min_y + 1.5, 0), Ponto(1, 1, 1),
 		      &heartMod)
 			.desenha();
+	*/
 
 	for (auto &tiro : tirosPlayer) {
 		for (auto &inimigo : inimigos) {
@@ -264,12 +326,14 @@ void display(void)
 	player.desenha();
 	--player.delay;
 
+	/*
 	for (auto inimigo : inimigos) {
 		if (player.colide(inimigo) && player.delay <= 0) {
 			--player.vida;
 			player.delay = 60;
 		}
 	}
+	*/
 
 end:
 	glutSwapBuffers();
@@ -291,12 +355,12 @@ void arrow_keys(int a_keys, int, int)
 	// o objeto apontando para cima
 	switch (a_keys) {
 	case GLUT_KEY_LEFT:
-		player.rotacao += 1.0f;
+		player.rotacao += 3.0f;
 		if (player.rotacao >= 360.0f)
 			player.rotacao = 0.0f;
 		break;
 	case GLUT_KEY_RIGHT:
-		player.rotacao -= 1.0f;
+		player.rotacao -= 3.0f;
 		if (player.rotacao <= 0.0f)
 			player.rotacao = 360.0f;
 		break;
