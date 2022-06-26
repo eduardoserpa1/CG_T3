@@ -32,6 +32,7 @@ typedef struct Color {
 } Color;
 
 typedef vector<vector<Color> > Modelo;
+typedef vector<vector<int> > Mapa;
 
 class Instancia {
     private:

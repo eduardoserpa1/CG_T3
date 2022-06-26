@@ -47,6 +47,7 @@ using namespace std;
 #include "Actors.h"
 
 Modelo monta_arquivo(string arquivo);
+Mapa monta_arquivo_mapa(string arquivo);
 void CriaInimigos();
 
 Temporizador T;
@@ -54,31 +55,21 @@ double AccumDeltaT = 0;
 
 // MODELOS:
 Modelo playerMod = monta_arquivo("player.txt");
-Modelo heartMod = monta_arquivo("heart.txt");
-
-Modelo inimigo1Mod = monta_arquivo("inimigo.txt");
-Modelo inimigo2Mod = monta_arquivo("inimigo2.txt");
-Modelo inimigo3Mod = monta_arquivo("inimigo3.txt");
-Modelo inimigo4Mod = monta_arquivo("inimigo4.txt");
-
-Modelo tiroMod = monta_arquivo("tiro.txt");
-
-Modelo winMod = monta_arquivo("win.txt");
-Modelo loseMod = monta_arquivo("lose.txt");
 
 Player player = Player(&playerMod);
-
-Texto win = Texto(Ponto(0, 0), Ponto(5, 5, 5), &winMod);
-Texto lose = Texto(Ponto(0, 0), Ponto(5, 5, 5), &loseMod);
-
-vector<Inimigo> inimigos;
-vector<Tiro> tirosPlayer;
-vector<Tiro> tirosInimigos;
 
 float min_x, min_y;
 float max_x, max_y;
 
 Ponto Min, Max;
+
+// 0 - vazio
+// 1 - rua
+// 2 - quadra
+// 3 - posicao inicial do jogador
+// n > 3 - predio com n sendo o tamanho do predio
+
+Mapa cidade = monta_arquivo_mapa("cidade.txt");
 
 vector<int> le_linhas(ifstream *f, int n_linha)
 {
@@ -106,6 +97,28 @@ vector<int> le_linhas(ifstream *f, int n_linha)
 	}
 	return v;
 }
+
+Mapa monta_arquivo_mapa(string arquivo)
+{
+	ifstream myfile;
+	myfile.open(arquivo);
+	if (!myfile.is_open()) {
+		cout << "Unable to open file";
+		exit(-1);
+	}
+
+	Mapa cidade;
+	int n_lin = le_linhas(&myfile, 1).at(0);
+	
+	for (int i = 0; i < n_lin; i++){
+		vector<int> linha = le_linhas(&myfile, 1);
+		cidade.push_back(linha);
+	}
+
+	myfile.close();
+	return cidade;
+}
+
 
 Modelo monta_arquivo(string arquivo)
 {
@@ -148,9 +161,29 @@ Modelo monta_arquivo(string arquivo)
 	return modelo;
 }
 
+GLfloat pos[] = {2.0f,2.0f,2.0f};
+
 void init()
-{
-	CriaInimigos();
+{	
+	GLfloat ambiente[] = {0.4f,0.4f,0.4f};
+	GLfloat difusa[] = {0.7f,0.7f,0.7f};
+	GLfloat especular[] = {0.9f,0.9f,0.9f};
+
+	//GLfloat pos[] = {0.0f,0.0f,3.0f};
+
+
+	glEnable(GL_LIGHTING);
+
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambiente);
+
+	glEnable(GL_COLOR_MATERIAL);
+
+	glLightfv(GL_LIGHT0,GL_AMBIENT,ambiente);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,difusa);
+	//glLightfv(GL_LIGHT0,GL_SPECULAR,especular);
+	glLightfv(GL_LIGHT0,GL_POSITION,pos);
+
+	glEnable(GL_LIGHT0);
 
 	float d = 15;
 
@@ -190,30 +223,108 @@ void reshape(int w, int h)
 	glLoadIdentity();
 }
 
-void CriaInimigos()
-{
-	inimigos.push_back(Inimigo(Ponto(-8, 12), 45, &inimigo1Mod));
-	inimigos.push_back(Inimigo(Ponto(8, 12), 90, &inimigo2Mod));
-	inimigos.push_back(Inimigo(Ponto(-8, -12), 90, &inimigo3Mod));
-	inimigos.push_back(Inimigo(Ponto(8, -12), 90, &inimigo4Mod));
-}
 
-void update_tiros(vector<Tiro> &tiros)
+void desenha_cidade(float escala)
 {
-	for (auto tiro = tiros.begin(); tiro < tiros.end(); ++tiro) {
-		if (tiro->foraDaAreaDeDesenho(Max, Min) || tiro->vida == 0) {
-			tiros.erase(tiro);
-			continue;
+	int x = cidade.size();
+	int y = cidade.at(0).size();
+
+	float x_mag = (x / 2.0) * escala;
+	float y_mag = (y / 2.0) * escala;
+
+	glPushMatrix();
+	for (int i = 0; i < x; i++) {
+		for (int j = 0; j < y; j++) {
+			float x_len = i * escala;
+			float y_len = j * escala;
+
+			int id = cidade.at(i).at(j);
+
+			double r = 0;
+			double g = 0;
+			double b = 0;
+
+			if(id == 1){
+				r = 80;
+				g = 80;
+				b = 80;
+			}
+
+			if(id == 2){
+				r = 0;
+				g = 200;
+				b = 0;
+			}
+
+			if(id == 3){
+				r = 255;
+				g = 0;
+				b = 0;
+			}
+
+			if(id > 3){
+				r = 0;
+				g = 0;
+				b = 100;
+
+				glColor3f(r,g,b);
+
+				// left wall
+				glBegin(GL_POLYGON);
+				glNormal3f(-1,0,0);
+				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
+				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
+				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
+				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glEnd();
+
+				// right wall
+				glBegin(GL_POLYGON);
+				glNormal3f(1,0,0);
+				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
+				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
+				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
+				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glEnd();
+
+				// up wall
+				glBegin(GL_POLYGON);
+				glNormal3f(0,1,0);
+				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
+				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
+				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glEnd();
+
+				// down wall
+				glBegin(GL_POLYGON);
+				glNormal3f(0,-1,0);
+				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
+				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
+				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
+				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
+				glEnd();		
+
+			}else{
+				
+				glColor3f(r,g,b);
+
+				glBegin(GL_QUADS);
+				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glVertex2f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glVertex2f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag);
+				glVertex2f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag);
+				glEnd();
+				
+			}
 		}
-		tiro->desenha();
-		tiro->anda();
 	}
+
+	glPopMatrix();
 }
 
-float x = 0;
-float y = 0;
-float z = 0;
 
+int acelera = 0;
 
 void display(void)
 {
@@ -226,10 +337,9 @@ void display(void)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
 	
-	float distancia_camera = 3.0f;
-	float altura_camera = 3.0f;
+	float distancia_camera = 2.0f;
+	float altura_camera = 1.0f;
 
 	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
 	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
@@ -278,64 +388,22 @@ void display(void)
 			glVertex2f(min_x,max_y);
 	glEnd();
 
+	desenha_cidade(1.0f);
 
-	if (player.vida <= 0) {
-		lose.desenha();
-		goto end;
-	} else if (inimigos.empty()) {
-		win.desenha();
-		goto end;
-	}
+	glColor3f(255,0,0);
 
-	/*
-	for (int i = 1; i < player.vida + 1; i++)
-		Texto(Ponto(min_x + (i * 1.3), min_y + 1.5, 0), Ponto(1, 1, 1),
-		      &heartMod)
-			.desenha();
-	*/
+	glBegin(GL_LINES);
+   	glVertex3fv(pos);
+   	glVertex3f(0,0,0);
+	glEnd();
+	
+	desenha_cidade(1.0f);
 
-	for (auto &tiro : tirosPlayer) {
-		for (auto &inimigo : inimigos) {
-			if (tiro.colide(inimigo)) {
-				--tiro.vida;
-				--inimigo.vida;
-			}
-		}
-	}
-	update_tiros(tirosPlayer);
+	if(acelera)
+		player.anda();
 
-	for (auto &tiro : tirosInimigos) {
-		if (tiro.colide(player)) {
-			--tiro.vida;
-			--player.vida;
-		}
-	}
-	update_tiros(tirosInimigos);
-
-	for (auto inim = inimigos.begin(); inim < inimigos.end(); ++inim) {
-		if (inim->vida <= 0) {
-			inimigos.erase(inim);
-			continue;
-		}
-		inim->desenha();
-		inim->anda(player.posicao, Max, Min);
-		inim->atira(&tirosInimigos, &tiroMod);
-	}
-
-	player.anda();
 	player.desenha();
-	--player.delay;
 
-	/*
-	for (auto inimigo : inimigos) {
-		if (player.colide(inimigo) && player.delay <= 0) {
-			--player.vida;
-			player.delay = 60;
-		}
-	}
-	*/
-
-end:
 	glutSwapBuffers();
 }
 
@@ -345,7 +413,7 @@ void keyboard(unsigned char key, int, int)
 	case 27:
 		exit(0); // ESC = termina o programa
 	case ' ':
-		player.atira(&tirosPlayer, &tiroMod);
+		player.anda();
 	}
 }
 
