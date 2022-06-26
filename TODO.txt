@@ -1,9 +1,10 @@
 - implementar texturas das ruas
 -x implementar a troca de camera de 1 pessoa para 3 pessoa
 -x permitir que a camera consiga "olhar para os lados", girando no prŕoprio eixo porém ainda seguindo o personagem
-- implementar as cores aleatorias para os predios
-- sistema de combustivel
+-x implementar as cores aleatorias para os predios
+-x sistema de combustivel
 - spawn aleatorio de capsulas de combustivel nas ruas 
-- limitações de movimentação do personagem (andar apenas nas ruas e não exceder os limites do mapa)
+-x limitações de movimentação do personagem (não exceder os limites do mapa)
+- limitações de movimentação do personagem (andar apenas nas ruas) 
 - implementar modelos .obj para personagem
 - resolver bug de luz (se der tempo)

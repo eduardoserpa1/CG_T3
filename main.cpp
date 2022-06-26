@@ -211,6 +211,11 @@ void init()
 
 	Min = Ponto(-d, -d);
 	Max = Ponto(d, d);
+
+	player.max = Max;
+	player.min = Min;
+
+	player.combustivel = 99999999;
 }
 
 double nFrames = 0;
@@ -411,11 +416,19 @@ void display(void)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	cout << "gas: " << player.combustivel << endl;
+
+	cout << "x: " << player.posicao.x << "   y: " << player.posicao.y << endl;
+
+	if(player.combustivel > 0){
+		if(acelera){
+			player.anda();
+		}
+	}
 	
 	float distancia_camera = 3.0f;
 	float altura_camera = 2.0f;
-
-	//cout << rotacaoc << endl;
 
 	switch (tipo_camera)
 	{
@@ -442,12 +455,9 @@ void display(void)
    	glVertex3fv(pos);
    	glVertex3f(0,0,0);
 	glEnd();
-	
+
 	desenha_cidade();
-
-	if(acelera)
-		player.anda();
-
+	
 	player.desenha();
 
 	glutSwapBuffers();
@@ -459,7 +469,7 @@ void keyboard(unsigned char key, int, int)
 	case 27:
 		exit(0); // ESC = termina o programa
 	case ' ':
-		player.anda();
+		acelera = 1;
 	break;
 	case 'd':
 		rotacaoc -= 3.0f;
@@ -482,6 +492,14 @@ void keyboard(unsigned char key, int, int)
 		break;
 	}
 	
+}
+
+void keyUP(unsigned char key, int, int){
+	switch (key) {
+	case ' ':
+		acelera = 0;
+	break;
+	}
 }
 
 void arrow_keys(int a_keys, int, int)
@@ -520,6 +538,7 @@ int main(int argc, char **argv)
 	glutIdleFunc(animate);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyUP);
 	glutSpecialFunc(arrow_keys);
 
 	glutMainLoop();

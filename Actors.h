@@ -10,15 +10,18 @@ class Tiro : public Instancia {
     public:
 	Tiro(Ponto pos, float angulo, Modelo *mod);
 	void anda();
-	bool foraDaAreaDeDesenho(Ponto max, Ponto min);
 };
 
 class Player : public Instancia {
     public:
 	int delay = 0;
 	const float speed = 1;
+	int combustivel = 100;
+	Ponto max;
+	Ponto min;
 	Player(Modelo *mod);
 
+	bool foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p);
 	void atira(std::vector<Tiro> *tiro, Modelo *tiroMods);
 	void anda();
 };
