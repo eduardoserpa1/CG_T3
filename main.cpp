@@ -348,6 +348,7 @@ void desenha_cidade(){
 
 int acelera = 0;
 
+
 void display(void)
 {
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -360,11 +361,13 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	float distancia_camera = 2.0f;
-	float altura_camera = 2.0f;
+	float distancia_camera = 1.0f;
+	float altura_camera = 0.5f;
 
 	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
 	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
+
+	cout << "oposto:" << oposto << "  adjacente:" << adjacente << endl;
 
 	if (oposto > distancia_camera || oposto < -distancia_camera) 
 		oposto = 0;
