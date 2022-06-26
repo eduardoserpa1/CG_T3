@@ -65,6 +65,7 @@ Ponto Min, Max;
 
 Mapa cidade = monta_arquivo_mapa("cidade.txt");
 float escala = 1.0f;
+vector<int> cores_dos_predios;
 
 vector<int> le_linhas(ifstream *f, int n_linha)
 {
@@ -184,6 +185,15 @@ void init()
 	glEnable(GL_LIGHT0);
 
 	escala = 2.0f;
+
+	for (int i = 0; i < cidade.size(); i++){
+		for (int j = 0; j < cidade.at(0).size(); j++){
+			if(cidade.at(i).at(j) > 3){
+				int r = rand() % 100;
+				cores_dos_predios.push_back(r);
+			}	
+		}
+	}
 	
 	int max = cidade.size();
 	if(cidade.at(0).size() > max)
@@ -244,6 +254,8 @@ void desenha_cidade(){
 	float x_mag = (x / 2.0) * escala;
 	float y_mag = (y / 2.0) * escala;
 
+	int index_cor = 0;
+
 	glPushMatrix();
 	for (int i = 0; i < x; i++) {
 		for (int j = 0; j < y; j++) {
@@ -279,7 +291,8 @@ void desenha_cidade(){
 				g = 0;
 				b = 0.5f;
 
-				glColor3f(r,g,b);
+				defineCor(cores_dos_predios.at(index_cor));
+				++index_cor;
 
 				// left wall
 				glBegin(GL_QUADS);
@@ -402,7 +415,7 @@ void display(void)
 	float distancia_camera = 3.0f;
 	float altura_camera = 2.0f;
 
-	cout << rotacaoc << endl;
+	//cout << rotacaoc << endl;
 
 	switch (tipo_camera)
 	{
@@ -422,40 +435,6 @@ void display(void)
 	default:
 		break;
 	}
-
-	glColor3f(0.0f,1.0f,0.0f);
-
-	glLineWidth(2.0f);
-
-	glBegin(GL_LINE_STRIP);
-			glVertex2f(-3,-3);
-			glVertex2f(3,3);
-	glEnd();
-	
-	glBegin(GL_LINE_STRIP);
-			glVertex2f(-3,3);
-			glVertex2f(3,-3);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-			glVertex2f(min_x,min_y);
-			glVertex2f(max_x,min_y);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-			glVertex2f(min_x,min_y);
-			glVertex2f(min_x,max_y);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-			glVertex2f(max_x,max_y);
-			glVertex2f(max_x,min_y);
-	glEnd();
-
-	glBegin(GL_LINE_STRIP);
-			glVertex2f(max_x,max_y);
-			glVertex2f(min_x,max_y);
-	glEnd();
 
 	glColor3f(255,0,0);
 
