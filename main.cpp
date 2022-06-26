@@ -46,6 +46,8 @@ using namespace std;
 
 #include "Actors.h"
 
+#include "Texturas.h"
+
 Modelo monta_arquivo(string arquivo);
 Mapa monta_arquivo_mapa(string arquivo);
 void CriaInimigos();
@@ -162,6 +164,8 @@ GLfloat ambiente[] = {0.4f,0.4f,0.4f};
 GLfloat difusa[] = {0.7f,0.7f,0.7f};
 GLfloat especular[] = {1.0f,1.0f,1.0f};	
 
+
+
 void init()
 {	
 	glEnable(GL_DEPTH_TEST);	
@@ -184,13 +188,30 @@ void init()
 
 	glEnable(GL_LIGHT0);
 
+
+	// Habilitar o uso de texturas
+	glEnable ( GL_TEXTURE_2D );
+
+	CarregaTexturas();
+
+
 	escala = 2.0f;
 
-	for (int i = 0; i < cidade.size(); i++){
-		for (int j = 0; j < cidade.at(0).size(); j++){
+	float player_pos_inicial_x = 0;
+	float player_pos_inicial_y = 0;
+
+	int xlen = cidade.size();
+	int ylen = cidade.at(0).size();
+
+	for (int i = 0; i < xlen; i++){
+		for (int j = 0; j < ylen; j++){
 			if(cidade.at(i).at(j) > 3){
 				int r = rand() % 100;
 				cores_dos_predios.push_back(r);
+			}else
+			if(cidade.at(i).at(j) == 3){
+				player_pos_inicial_x = ((i * escala) + escala/2) - (xlen * escala)/2;
+				player_pos_inicial_y = ((j * escala) + escala/2) - (ylen * escala)/2;
 			}	
 		}
 	}
@@ -214,6 +235,8 @@ void init()
 
 	player.max = Max;
 	player.min = Min;
+
+	player.posicao = Ponto(player_pos_inicial_x,player_pos_inicial_y, 0.1f);
 
 	player.combustivel = 99999999;
 }
@@ -269,20 +292,19 @@ void desenha_cidade(){
 
 			int id = cidade.at(i).at(j);
 
-			double r = 0;
-			double g = 0;
-			double b = 0;
+			double r = 0.8f;
+			double g = 0.8f;
+			double b = 0.8f;
 
 			if(id == 1){
-				r = 0.2f;
-				g = 0.2f;
-				b = 0.2f;
+				glBindTexture(GL_TEXTURE_2D, idTexturaRua[None]);
 			}
 
 			if(id == 2){
-				r = 0;
-				g = 0.8f;
-				b = 0;
+				glBindTexture(GL_TEXTURE_2D, idTexturaRua[GRASS]);
+				r = 0.2f;
+				g = 0.6f;
+				b = 0.2f;
 			}
 
 			if(id == 3){
@@ -292,9 +314,26 @@ void desenha_cidade(){
 			}
 
 			if(id > 3){
-				r = 0;
-				g = 0;
+				r = 0.5f;
+				g = 0.5f;
 				b = 0.5f;
+
+				glColor3f(r,g,b);
+				glBindTexture(GL_TEXTURE_2D, idTexturaRua[FLOOR]);
+
+				glBegin(GL_QUADS);
+				glNormal3f(0,0,1);
+				
+				glTexCoord2f(0,0);
+				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glTexCoord2f(1,0);
+				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glTexCoord2f(1,1);
+				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
+				glTexCoord2f(0,1);
+				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
+				
+				glEnd();
 
 				defineCor(cores_dos_predios.at(index_cor));
 				++index_cor;
@@ -351,10 +390,16 @@ void desenha_cidade(){
 
 				glBegin(GL_QUADS);
 				glNormal3f(0,0,1);
+				
+				glTexCoord2f(0,0);
 				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glTexCoord2f(1,0);
 				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glTexCoord2f(1,1);
 				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
+				glTexCoord2f(0,1);
 				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
+				
 				glEnd();
 				
 			}
@@ -368,29 +413,14 @@ int acelera = 0;
 int rotacaoc = 0;
 int tipo_camera = 2;
 
-void camera(float distancia_camera, float altura_camera, float z){
+void camera(float distancia_camera, float altura_camera, float z, int livre){
 	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
 	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
 
 	if (oposto > distancia_camera || oposto < -distancia_camera) 
 		oposto = 0;
 	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
-		adjacente = 0;	
-
-	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
-				player.posicao.x, player.posicao.y, z, 	//center
-				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
-}
-
-
-void camera_livre(float distancia_camera, float altura_camera, float z){
-	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
-	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
-
-	if (oposto > distancia_camera || oposto < -distancia_camera) 
-		oposto = 0;
-	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
-		adjacente = 0;	
+		adjacente = 0;
 
 	float oposto2 = sin(rotacaoc * M_PI / 180) * distancia_camera;
 	float adjacente2 = cos(rotacaoc * M_PI / 180) * distancia_camera;
@@ -398,11 +428,17 @@ void camera_livre(float distancia_camera, float altura_camera, float z){
 	if (oposto2 > distancia_camera || oposto2 < -distancia_camera) 
 		oposto2 = 0;
 	if (adjacente2 > distancia_camera || adjacente2 < -distancia_camera) 
-		adjacente2 = 0;	
-
-	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
+		adjacente2 = 0;		
+	if(livre){
+		gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
 				player.posicao.x + adjacente + adjacente2, player.posicao.y + oposto + oposto2, z, 	//center
 				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+	}else{
+		gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
+				player.posicao.x, player.posicao.y, z, 	//center
+				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+	}
+	
 }
 
 void display(void)
@@ -434,15 +470,15 @@ void display(void)
 	{
 	case 1:
 		//1a pessoa
-		camera(0.5f,0.5f,0.5f);
+		camera(0.5f,0.5f,0.5f,0);
 		break;	
 	case 2:
 		//3a pessoa travada
-		camera(distancia_camera,altura_camera,0);
+		camera(distancia_camera,altura_camera,0,0);
 		break;
 	case 3:
 		//3a pessoa destravada
-		camera_livre(distancia_camera,altura_camera,0);
+		camera(distancia_camera,altura_camera,0,1);
 		break;
 	
 	default:
@@ -485,10 +521,11 @@ void keyboard(unsigned char key, int, int)
 		tipo_camera = 1;
 		break;
 	case '2':
-		tipo_camera = 2;
+		tipo_camera = 2;	
 		break;
 	case '3':
 		tipo_camera = 3;
+		rotacaoc = player.rotacao - 180;
 		break;
 	}
 	

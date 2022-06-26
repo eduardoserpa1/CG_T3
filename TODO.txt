@@ -1,4 +1,4 @@
-- implementar texturas das ruas
+-x implementar texturas das ruas
 -x implementar a troca de camera de 1 pessoa para 3 pessoa
 -x permitir que a camera consiga "olhar para os lados", girando no prŕoprio eixo porém ainda seguindo o personagem
 -x implementar as cores aleatorias para os predios
@@ -8,3 +8,4 @@
 - limitações de movimentação do personagem (andar apenas nas ruas) 
 - implementar modelos .obj para personagem
 - resolver bug de luz (se der tempo)
+-x spawn do personagem na coordenada especificada no mapa
