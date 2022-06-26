@@ -195,7 +195,7 @@ void init()
 	CarregaTexturas();
 
 
-	escala = 2.0f;
+	escala = 10.0f;
 
 	float player_pos_inicial_x = 0;
 	float player_pos_inicial_y = 0;
@@ -342,8 +342,8 @@ void desenha_cidade(){
 				glBegin(GL_QUADS);
 				glNormal3f(-1,0,0);
 				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
 				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4)+ y_len) - y_mag, 0);
 				glEnd();
 
@@ -352,8 +352,8 @@ void desenha_cidade(){
 				glBegin(GL_QUADS);
 				glNormal3f(1,0,0);
 				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
 				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
 				glEnd();
 
@@ -361,8 +361,8 @@ void desenha_cidade(){
 				glBegin(GL_QUADS);
 				glNormal3f(0,1,0);
 				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
 				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
 				glEnd();
 
@@ -370,18 +370,18 @@ void desenha_cidade(){
 				glBegin(GL_QUADS);
 				glNormal3f(0,-1,0);
 				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
 				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
 				glEnd();
 
 				// hoof
 				glBegin(GL_QUADS);
 				glNormal3f(0,0,1);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
 				glEnd();		
 
 			}else{
