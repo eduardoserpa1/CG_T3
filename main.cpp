@@ -347,7 +347,45 @@ void desenha_cidade(){
 }
 
 int acelera = 0;
+int rotacaoc = 0;
+int tipo_camera = 2;
 
+void camera(float distancia_camera, float altura_camera, float z){
+	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
+	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
+
+	if (oposto > distancia_camera || oposto < -distancia_camera) 
+		oposto = 0;
+	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
+		adjacente = 0;	
+
+	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
+				player.posicao.x, player.posicao.y, z, 	//center
+				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+}
+
+
+void camera_livre(float distancia_camera, float altura_camera, float z){
+	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
+	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
+
+	if (oposto > distancia_camera || oposto < -distancia_camera) 
+		oposto = 0;
+	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
+		adjacente = 0;	
+
+	float oposto2 = sin(rotacaoc * M_PI / 180) * distancia_camera;
+	float adjacente2 = cos(rotacaoc * M_PI / 180) * distancia_camera;
+
+	if (oposto2 > distancia_camera || oposto2 < -distancia_camera) 
+		oposto2 = 0;
+	if (adjacente2 > distancia_camera || adjacente2 < -distancia_camera) 
+		adjacente2 = 0;	
+
+	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
+				player.posicao.x + adjacente + adjacente2, player.posicao.y + oposto + oposto2, z, 	//center
+				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+}
 
 void display(void)
 {
@@ -361,23 +399,29 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	float distancia_camera = 1.0f;
-	float altura_camera = 0.5f;
+	float distancia_camera = 3.0f;
+	float altura_camera = 2.0f;
 
-	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
-	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
+	cout << rotacaoc << endl;
 
-	cout << "oposto:" << oposto << "  adjacente:" << adjacente << endl;
-
-	if (oposto > distancia_camera || oposto < -distancia_camera) 
-		oposto = 0;
-	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
-		adjacente = 0;	
+	switch (tipo_camera)
+	{
+	case 1:
+		//1a pessoa
+		camera(0.5f,0.5f,0.5f);
+		break;	
+	case 2:
+		//3a pessoa travada
+		camera(distancia_camera,altura_camera,0);
+		break;
+	case 3:
+		//3a pessoa destravada
+		camera_livre(distancia_camera,altura_camera,0);
+		break;
 	
-
-	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
-				player.posicao.x , player.posicao.y, 0.0f, 	//center
-				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+	default:
+		break;
+	}
 
 	glColor3f(0.0f,1.0f,0.0f);
 
@@ -437,7 +481,28 @@ void keyboard(unsigned char key, int, int)
 		exit(0); // ESC = termina o programa
 	case ' ':
 		player.anda();
+	break;
+	case 'd':
+		rotacaoc -= 3.0f;
+		if (rotacaoc <= 0.0f)
+			rotacaoc = 360.0f;
+		break;
+	case 'a':
+		rotacaoc += 3.0f;
+		if (rotacaoc >= 360.0f)
+			rotacaoc = 0.0f;
+		break;
+	case '1':
+		tipo_camera = 1;
+		break;
+	case '2':
+		tipo_camera = 2;
+		break;
+	case '3':
+		tipo_camera = 3;
+		break;
 	}
+	
 }
 
 void arrow_keys(int a_keys, int, int)

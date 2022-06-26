@@ -1,6 +1,6 @@
 - implementar texturas das ruas
-- implementar a troca de camera de 1 pessoa para 3 pessoa
-- permitir que a camera consiga "olhar para os lados", girando no prŕoprio eixo porém ainda seguindo o personagem
+-x implementar a troca de camera de 1 pessoa para 3 pessoa
+-x permitir que a camera consiga "olhar para os lados", girando no prŕoprio eixo porém ainda seguindo o personagem
 - implementar as cores aleatorias para os predios
 - sistema de combustivel
 - spawn aleatorio de capsulas de combustivel nas ruas 
