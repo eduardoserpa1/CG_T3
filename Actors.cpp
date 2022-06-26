@@ -21,14 +21,14 @@ void Desenha(Modelo const *coords)
 			glColor3f(r, g, b);
 
 			glBegin(GL_QUADS);
-			glVertex2f((0.0f + x_len) - x_mag,
-				   (0.0f + y_len) - y_mag);
-			glVertex2f((0.1f + x_len) - x_mag,
-				   (0.0f + y_len) - y_mag);
-			glVertex2f((0.1f + x_len) - x_mag,
-				   (0.1f + y_len) - y_mag);
-			glVertex2f((0.0f + x_len) - x_mag,
-				   (0.1f + y_len) - y_mag);
+			glVertex3f((0.0f + x_len) - x_mag,
+				   (0.0f + y_len) - y_mag, 0.1f);
+			glVertex3f((0.1f + x_len) - x_mag,
+				   (0.0f + y_len) - y_mag, 0.1f);
+			glVertex3f((0.1f + x_len) - x_mag,
+				   (0.1f + y_len) - y_mag, 0.1f);
+			glVertex3f((0.0f + x_len) - x_mag,
+				   (0.1f + y_len) - y_mag, 0.1f);
 			glEnd();
 		}
 	}
@@ -60,6 +60,7 @@ bool Tiro::foraDaAreaDeDesenho(Ponto max, Ponto min)
 Player::Player(Modelo *mod)
 	: Instancia(mod, 300)
 {
+	this->posicao = Ponto(0,0,0);
 	this->desenha_modelo = Desenha;
 }
 
@@ -86,8 +87,7 @@ void Player::atira(std::vector<Tiro> *tiros, Modelo *tiroMod)
 }
 
 Inimigo::Inimigo(Ponto pos, float angulo, Modelo *mod)
-	: Instancia(mod, 1)
-	, curva(Bezier(pos, pos, pos))
+	: Instancia(mod, 1) 
 {
 	this->posicao = pos;
 	this->rotacao = angulo > 0 ? angulo : 360.0 + angulo;
@@ -101,23 +101,4 @@ void Inimigo::atira(std::vector<Tiro> *tiros, Modelo *tiroMod)
 		int r = rand() % 100;
 		this->delay = r > 0 ? r : -r;
 	}
-}
-
-void Inimigo::anda(Ponto playerPos, Ponto max, Ponto min)
-{
-	if (this->deltaT >= 1.0) {
-		this->curva = Bezier(this->posicao,
-				     Ponto(min.x + static_cast<float>(rand()) /
-							   ((float)RAND_MAX /
-							    (max.x - min.x)),
-					   min.y + static_cast<float>(rand()) /
-							   ((float)RAND_MAX /
-							    (max.y - min.y))),
-				     playerPos);
-		this->deltaT = 0.0;
-	}
-	//this->curva.Traca();
-	this->deltaT += this->curva.CalculaT(0.1);
-	this->posicao = this->curva.Calcula(this->deltaT);
-	--this->delay;
 }

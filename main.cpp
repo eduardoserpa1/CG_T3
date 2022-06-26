@@ -63,13 +63,8 @@ float max_x, max_y;
 
 Ponto Min, Max;
 
-// 0 - vazio
-// 1 - rua
-// 2 - quadra
-// 3 - posicao inicial do jogador
-// n > 3 - predio com n sendo o tamanho do predio
-
 Mapa cidade = monta_arquivo_mapa("cidade.txt");
+float escala = 1.0f;
 
 vector<int> le_linhas(ifstream *f, int n_linha)
 {
@@ -161,31 +156,42 @@ Modelo monta_arquivo(string arquivo)
 	return modelo;
 }
 
-GLfloat pos[] = {2.0f,2.0f,2.0f};
+GLfloat pos[] = {2.0f,2.0f,1.0f};
+GLfloat ambiente[] = {0.4f,0.4f,0.4f};
+GLfloat difusa[] = {0.7f,0.7f,0.7f};
+GLfloat especular[] = {1.0f,1.0f,1.0f};	
 
 void init()
 {	
-	GLfloat ambiente[] = {0.4f,0.4f,0.4f};
-	GLfloat difusa[] = {0.7f,0.7f,0.7f};
-	GLfloat especular[] = {0.9f,0.9f,0.9f};
+	glEnable(GL_DEPTH_TEST);	
 
-	//GLfloat pos[] = {0.0f,0.0f,3.0f};
-
-
-	glEnable(GL_LIGHTING);
-
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambiente);
+	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+	
+	//glShadeModel(GL_SMOOTH);
 
 	glEnable(GL_COLOR_MATERIAL);
 
+	glEnable(GL_LIGHTING);
+	
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambiente);
+
 	glLightfv(GL_LIGHT0,GL_AMBIENT,ambiente);
+
 	glLightfv(GL_LIGHT0,GL_DIFFUSE,difusa);
-	//glLightfv(GL_LIGHT0,GL_SPECULAR,especular);
+
 	glLightfv(GL_LIGHT0,GL_POSITION,pos);
 
 	glEnable(GL_LIGHT0);
 
-	float d = 15;
+	escala = 2.0f;
+	
+	int max = cidade.size();
+	if(cidade.at(0).size() > max)
+		max = cidade.at(0).size();
+
+	float d = (max * escala)/2;
+
+	cout << "d: " << d << endl;
 
 	min_x = -d;
 	min_y = -d;
@@ -224,8 +230,14 @@ void reshape(int w, int h)
 }
 
 
-void desenha_cidade(float escala)
-{
+void desenha_cidade(){
+
+	// 0 - vazio
+	// 1 - rua
+	// 2 - quadra
+	// 3 - posicao inicial do jogador
+	// n > 3 - predio com n sendo o tamanho do predio
+
 	int x = cidade.size();
 	int y = cidade.at(0).size();
 
@@ -245,19 +257,19 @@ void desenha_cidade(float escala)
 			double b = 0;
 
 			if(id == 1){
-				r = 80;
-				g = 80;
-				b = 80;
+				r = 0.2f;
+				g = 0.2f;
+				b = 0.2f;
 			}
 
 			if(id == 2){
 				r = 0;
-				g = 200;
+				g = 0.8f;
 				b = 0;
 			}
 
 			if(id == 3){
-				r = 255;
+				r = 1.0f;
 				g = 0;
 				b = 0;
 			}
@@ -265,44 +277,54 @@ void desenha_cidade(float escala)
 			if(id > 3){
 				r = 0;
 				g = 0;
-				b = 100;
+				b = 0.5f;
 
 				glColor3f(r,g,b);
 
 				// left wall
-				glBegin(GL_POLYGON);
+				glBegin(GL_QUADS);
 				glNormal3f(-1,0,0);
-				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
-				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
-				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
-				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4)+ y_len) - y_mag, 0);
 				glEnd();
 
+
 				// right wall
-				glBegin(GL_POLYGON);
+				glBegin(GL_QUADS);
 				glNormal3f(1,0,0);
-				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
-				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
-				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
-				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
 				glEnd();
 
 				// up wall
-				glBegin(GL_POLYGON);
+				glBegin(GL_QUADS);
 				glNormal3f(0,1,0);
-				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
-				glVertex3f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
-				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 1);
-				glVertex3f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag, 0);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
 				glEnd();
 
 				// down wall
-				glBegin(GL_POLYGON);
+				glBegin(GL_QUADS);
 				glNormal3f(0,-1,0);
-				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
-				glVertex3f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
-				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 1);
-				glVertex3f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag, 0);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
+				glEnd();
+
+				// hoof
+				glBegin(GL_QUADS);
+				glNormal3f(0,0,1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 1);
+				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 1);
 				glEnd();		
 
 			}else{
@@ -310,10 +332,11 @@ void desenha_cidade(float escala)
 				glColor3f(r,g,b);
 
 				glBegin(GL_QUADS);
+				glNormal3f(0,0,1);
 				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
-				glVertex2f((1.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
-				glVertex2f((1.0f + x_len) - x_mag, (1.0f + y_len) - y_mag);
-				glVertex2f((0.0f + x_len) - x_mag, (1.0f + y_len) - y_mag);
+				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
+				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
+				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
 				glEnd();
 				
 			}
@@ -323,13 +346,12 @@ void desenha_cidade(float escala)
 	glPopMatrix();
 }
 
-
 int acelera = 0;
 
 void display(void)
 {
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -339,7 +361,7 @@ void display(void)
 	glLoadIdentity();
 	
 	float distancia_camera = 2.0f;
-	float altura_camera = 1.0f;
+	float altura_camera = 2.0f;
 
 	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
 	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
@@ -347,11 +369,11 @@ void display(void)
 	if (oposto > distancia_camera || oposto < -distancia_camera) 
 		oposto = 0;
 	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
-		adjacente = 0;
+		adjacente = 0;	
 	
 
 	gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
-				player.posicao.x, player.posicao.y, 0.0f, 	//center
+				player.posicao.x , player.posicao.y, 0.0f, 	//center
 				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
 
 	glColor3f(0.0f,1.0f,0.0f);
@@ -388,8 +410,6 @@ void display(void)
 			glVertex2f(min_x,max_y);
 	glEnd();
 
-	desenha_cidade(1.0f);
-
 	glColor3f(255,0,0);
 
 	glBegin(GL_LINES);
@@ -397,7 +417,7 @@ void display(void)
    	glVertex3f(0,0,0);
 	glEnd();
 	
-	desenha_cidade(1.0f);
+	desenha_cidade();
 
 	if(acelera)
 		player.anda();

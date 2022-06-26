@@ -5,7 +5,6 @@
 
 #include "Instancia.h"
 #include "Ponto.h"
-#include "Bezier.h"
 
 class Tiro : public Instancia {
     public:
@@ -33,7 +32,6 @@ class Inimigo : public Instancia {
     private:
 	int delay = 0;
 	float deltaT = 1.0;
-	Bezier curva;
 };
 
 class Texto : public Instancia {
