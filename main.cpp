@@ -60,7 +60,7 @@ Modelo playerMod = monta_arquivo("player.txt");
 Modelo capsulaMod = monta_arquivo("capsula.txt");
 
 Player player = Player(&playerMod);
-Inimigo capsula = Inimigo(Ponto(),0,&capsulaMod);
+Inimigo capsula = Inimigo(Ponto(), 0, &capsulaMod);
 
 float min_x, min_y;
 float max_x, max_y;
@@ -102,13 +102,16 @@ vector<int> le_linhas(ifstream *f, int n_linha)
 	return v;
 }
 
-std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-    }
-    return str;
+std::string ReplaceAll(std::string str, const std::string &from,
+		       const std::string &to)
+{
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos +=
+			to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
 }
 
 Mapa monta_arquivo_mapa(string arquivo)
@@ -122,8 +125,8 @@ Mapa monta_arquivo_mapa(string arquivo)
 
 	Mapa cidade;
 	int n_lin = le_linhas(&myfile, 1).at(0);
-	
-	for (int i = 0; i < n_lin; i++){
+
+	for (int i = 0; i < n_lin; i++) {
 		vector<int> linha = le_linhas(&myfile, 1);
 		cidade.push_back(linha);
 	}
@@ -131,7 +134,6 @@ Mapa monta_arquivo_mapa(string arquivo)
 	myfile.close();
 	return cidade;
 }
-
 
 Modelo monta_arquivo(string arquivo)
 {
@@ -174,50 +176,48 @@ Modelo monta_arquivo(string arquivo)
 	return modelo;
 }
 
-GLfloat pos[] = {2.0f,2.0f,1.0f};
-GLfloat ambiente[] = {0.4f,0.4f,0.4f};
-GLfloat difusa[] = {0.7f,0.7f,0.7f};
-GLfloat especular[] = {1.0f,1.0f,1.0f};	
+GLfloat pos[] = { 2.0f, 2.0f, 1.0f };
+GLfloat ambiente[] = { 0.4f, 0.4f, 0.4f };
+GLfloat difusa[] = { 0.7f, 0.7f, 0.7f };
+GLfloat especular[] = { 1.0f, 1.0f, 1.0f };
 
-
-void spawn_capsula(){
+void spawn_capsula()
+{
 	int qtd_tile_rua = ruas.size();
-	
+
 	int r = rand() % qtd_tile_rua;
 
-	Inimigo capsula = Inimigo(ruas.at(r),0,&capsulaMod);
+	Inimigo capsula = Inimigo(ruas.at(r), 0, &capsulaMod);
 
 	inimigos.push_back(capsula);
 }
 
 void init()
-{	
-	glEnable(GL_DEPTH_TEST);	
+{
+	glEnable(GL_DEPTH_TEST);
 
-	glColorMaterial ( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
-	
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
 	//glShadeModel(GL_SMOOTH);
 
 	glEnable(GL_COLOR_MATERIAL);
 
 	glEnable(GL_LIGHTING);
-	
+
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambiente);
 
-	glLightfv(GL_LIGHT0,GL_AMBIENT,ambiente);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambiente);
 
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,difusa);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, difusa);
 
-	glLightfv(GL_LIGHT0,GL_POSITION,pos);
+	glLightfv(GL_LIGHT0, GL_POSITION, pos);
 
 	glEnable(GL_LIGHT0);
 
-
 	// Habilitar o uso de texturas
-	glEnable ( GL_TEXTURE_2D );
+	glEnable(GL_TEXTURE_2D);
 
 	CarregaTexturas();
-
 
 	escala = 10.0f;
 
@@ -227,30 +227,35 @@ void init()
 	int xlen = cidade.size();
 	int ylen = cidade.at(0).size();
 
-	for (int i = 0; i < xlen; i++){
-		for (int j = 0; j < ylen; j++){
-			if(cidade.at(i).at(j) > 3){
+	for (int i = 0; i < xlen; i++) {
+		for (int j = 0; j < ylen; j++) {
+			if (cidade.at(i).at(j) > 3) {
 				int r = rand() % 100;
 				cores_dos_predios.push_back(r);
-			}else
-			if(cidade.at(i).at(j) == 3){
-				player_pos_inicial_x = ((i * escala) + escala/2) - (xlen * escala)/2;
-				player_pos_inicial_y = ((j * escala) + escala/2) - (ylen * escala)/2;
-			}	
-			if(cidade.at(i).at(j) == 1){
-				float x = ((i * escala) + escala/2) - (xlen * escala)/2;
-				float y = ((j * escala) + escala/2) - (ylen * escala)/2;
-				Ponto p = Ponto(x,y,0.2f);
+			} else if (cidade.at(i).at(j) == 3) {
+				player_pos_inicial_x =
+					((i * escala) + escala / 2) -
+					(xlen * escala) / 2;
+				player_pos_inicial_y =
+					((j * escala) + escala / 2) -
+					(ylen * escala) / 2;
+			}
+			if (cidade.at(i).at(j) == 1) {
+				float x = ((i * escala) + escala / 2) -
+					  (xlen * escala) / 2;
+				float y = ((j * escala) + escala / 2) -
+					  (ylen * escala) / 2;
+				Ponto p = Ponto(x, y, 0.2f);
 				ruas.push_back(p);
-			}	
+			}
 		}
 	}
-	
-	int max = cidade.size();
-	if(cidade.at(0).size() > max)
+
+	unsigned long max = cidade.size();
+	if (cidade.at(0).size() > max)
 		max = cidade.at(0).size();
 
-	float d = (max * escala)/2;
+	float d = (max * escala) / 2;
 
 	cout << "d: " << d << endl;
 
@@ -266,7 +271,8 @@ void init()
 	player.max = Max;
 	player.min = Min;
 
-	player.posicao = Ponto(player_pos_inicial_x,player_pos_inicial_y, 0.1f);
+	player.posicao =
+		Ponto(player_pos_inicial_x, player_pos_inicial_y, 0.1f);
 
 	player.combustivel = 999;
 
@@ -276,9 +282,7 @@ void init()
 	spawn_capsula();
 	spawn_capsula();
 	spawn_capsula();
-
 }
-
 
 double nFrames = 0;
 double TempoTotal = 0;
@@ -306,9 +310,8 @@ void reshape(int w, int h)
 	glLoadIdentity();
 }
 
-
-void desenha_cidade(){
-
+void desenha_cidade()
+{
 	// 0 - vazio
 	// 1 - rua
 	// 2 - quadra
@@ -335,37 +338,44 @@ void desenha_cidade(){
 			double g = 0.8f;
 			double b = 0.8f;
 
-			if(id == 1){
-				glBindTexture(GL_TEXTURE_2D, idTexturaRua[None]);
+			if (id == 1) {
+				glBindTexture(GL_TEXTURE_2D,
+					      idTexturaRua[None]);
 			}
 
-			if(id == 2){
-				glBindTexture(GL_TEXTURE_2D, idTexturaRua[GRASS]);
+			if (id == 2) {
+				glBindTexture(GL_TEXTURE_2D,
+					      idTexturaRua[GRASS]);
 				r = 0.2f;
 				g = 0.6f;
 				b = 0.2f;
 			}
 
-			if(id > 3){
+			if (id > 3) {
 				r = 0.5f;
 				g = 0.5f;
 				b = 0.5f;
 
-				glColor3f(r,g,b);
-				glBindTexture(GL_TEXTURE_2D, idTexturaRua[FLOOR]);
+				glColor3f(r, g, b);
+				glBindTexture(GL_TEXTURE_2D,
+					      idTexturaRua[FLOOR]);
 
 				glBegin(GL_QUADS);
-				glNormal3f(0,0,1);
-				
-				glTexCoord2f(0,0);
-				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
-				glTexCoord2f(1,0);
-				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
-				glTexCoord2f(1,1);
-				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
-				glTexCoord2f(0,1);
-				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
-				
+				glNormal3f(0, 0, 1);
+
+				glTexCoord2f(0, 0);
+				glVertex2f((0.0f + x_len) - x_mag,
+					   (0.0f + y_len) - y_mag);
+				glTexCoord2f(1, 0);
+				glVertex2f((escala + x_len) - x_mag,
+					   (0.0f + y_len) - y_mag);
+				glTexCoord2f(1, 1);
+				glVertex2f((escala + x_len) - x_mag,
+					   (escala + y_len) - y_mag);
+				glTexCoord2f(0, 1);
+				glVertex2f((0.0f + x_len) - x_mag,
+					   (escala + y_len) - y_mag);
+
 				glEnd();
 
 				defineCor(cores_dos_predios.at(index_cor));
@@ -373,68 +383,129 @@ void desenha_cidade(){
 
 				// left wall
 				glBegin(GL_QUADS);
-				glNormal3f(-1,0,0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4)+ y_len) - y_mag, 0);
+				glNormal3f(-1, 0, 0);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					0);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					0);
 				glEnd();
-
 
 				// right wall
 				glBegin(GL_QUADS);
-				glNormal3f(1,0,0);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
+				glNormal3f(1, 0, 0);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					0);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					0);
 				glEnd();
 
 				// up wall
 				glBegin(GL_QUADS);
-				glNormal3f(0,1,0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, 0);
+				glNormal3f(0, 1, 0);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					0);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					0);
 				glEnd();
 
 				// down wall
 				glBegin(GL_QUADS);
-				glNormal3f(0,-1,0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, 0);
+				glNormal3f(0, -1, 0);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					0);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					0);
 				glEnd();
 
 				// hoof
 				glBegin(GL_QUADS);
-				glNormal3f(0,0,1);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
-				glVertex3f(((0.0f + escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((escala - escala/4) + y_len) - y_mag, id);
-				glVertex3f(((escala - escala/4) + x_len) - x_mag, ((0.0f + escala/4) + y_len) - y_mag, id);
-				glEnd();		
+				glNormal3f(0, 0, 1);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((0.0f + escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((escala - escala / 4) + y_len) - y_mag,
+					id);
+				glVertex3f(
+					((escala - escala / 4) + x_len) - x_mag,
+					((0.0f + escala / 4) + y_len) - y_mag,
+					id);
+				glEnd();
 
-			}else{
-				
-				glColor3f(r,g,b);
+			} else {
+				glColor3f(r, g, b);
 
 				glBegin(GL_QUADS);
-				glNormal3f(0,0,1);
-				
-				glTexCoord2f(0,0);
-				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
-				glTexCoord2f(1,0);
-				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
-				glTexCoord2f(1,1);
-				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
-				glTexCoord2f(0,1);
-				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
-				
+				glNormal3f(0, 0, 1);
+
+				glTexCoord2f(0, 0);
+				glVertex2f((0.0f + x_len) - x_mag,
+					   (0.0f + y_len) - y_mag);
+				glTexCoord2f(1, 0);
+				glVertex2f((escala + x_len) - x_mag,
+					   (0.0f + y_len) - y_mag);
+				glTexCoord2f(1, 1);
+				glVertex2f((escala + x_len) - x_mag,
+					   (escala + y_len) - y_mag);
+				glTexCoord2f(0, 1);
+				glVertex2f((0.0f + x_len) - x_mag,
+					   (escala + y_len) - y_mag);
+
 				glEnd();
-				
 			}
 		}
 	}
@@ -446,32 +517,35 @@ int acelera = 0;
 int rotacaoc = 0;
 int tipo_camera = 2;
 
-void camera(float distancia_camera, float altura_camera, float z, int livre){
+void camera(float distancia_camera, float altura_camera, float z, int livre)
+{
 	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
 	float adjacente = cos(player.rotacao * M_PI / 180) * distancia_camera;
 
-	if (oposto > distancia_camera || oposto < -distancia_camera) 
+	if (oposto > distancia_camera || oposto < -distancia_camera)
 		oposto = 0;
-	if (adjacente > distancia_camera || adjacente < -distancia_camera) 
+	if (adjacente > distancia_camera || adjacente < -distancia_camera)
 		adjacente = 0;
 
 	float oposto2 = sin(rotacaoc * M_PI / 180) * distancia_camera;
 	float adjacente2 = cos(rotacaoc * M_PI / 180) * distancia_camera;
 
-	if (oposto2 > distancia_camera || oposto2 < -distancia_camera) 
+	if (oposto2 > distancia_camera || oposto2 < -distancia_camera)
 		oposto2 = 0;
-	if (adjacente2 > distancia_camera || adjacente2 < -distancia_camera) 
-		adjacente2 = 0;		
-	if(livre){
-		gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
-				player.posicao.x + adjacente + adjacente2, player.posicao.y + oposto + oposto2, z, 	//center
-				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
-	}else{
-		gluLookAt(	player.posicao.x + adjacente, player.posicao.y + oposto , altura_camera, //eye
-				player.posicao.x, player.posicao.y, z, 	//center
-				0.0f, 1.0f, GL_HIGH_FLOAT);	//up
+	if (adjacente2 > distancia_camera || adjacente2 < -distancia_camera)
+		adjacente2 = 0;
+	if (livre) {
+		gluLookAt(player.posicao.x + adjacente,
+			  player.posicao.y + oposto, altura_camera, //eye
+			  player.posicao.x + adjacente + adjacente2,
+			  player.posicao.y + oposto + oposto2, z, //center
+			  0.0f, 1.0f, GL_HIGH_FLOAT); //up
+	} else {
+		gluLookAt(player.posicao.x + adjacente,
+			  player.posicao.y + oposto, altura_camera, //eye
+			  player.posicao.x, player.posicao.y, z, //center
+			  0.0f, 1.0f, GL_HIGH_FLOAT); //up
 	}
-	
 }
 
 void display(void)
@@ -490,43 +564,42 @@ void display(void)
 
 	//cout << "x: " << player.posicao.x << "   y: " << player.posicao.y << endl;
 
-	if(player.combustivel > 0){
-		if(acelera){
+	if (player.combustivel > 0) {
+		if (acelera) {
 			player.anda();
 		}
 	}
-	
+
 	float distancia_camera = 3.0f;
 	float altura_camera = 2.0f;
 
-	switch (tipo_camera)
-	{
+	switch (tipo_camera) {
 	case 1:
 		//1a pessoa
-		camera(0.5f,0.5f,0.5f,0);
-		break;	
+		camera(0.5f, 0.5f, 0.5f, 0);
+		break;
 	case 2:
 		//3a pessoa travada
-		camera(distancia_camera,altura_camera,0,0);
+		camera(distancia_camera, altura_camera, 0, 0);
 		break;
 	case 3:
 		//3a pessoa destravada
-		camera(distancia_camera,altura_camera,0,1);
+		camera(distancia_camera, altura_camera, 0, 1);
 		break;
-	
+
 	default:
 		break;
 	}
 
-	glColor3f(255,0,0);
+	glColor3f(255, 0, 0);
 
 	glBegin(GL_LINES);
-   	glVertex3fv(pos);
-   	glVertex3f(0,0,0);
+	glVertex3fv(pos);
+	glVertex3f(0, 0, 0);
 	glEnd();
 
 	desenha_cidade();
-	
+
 	for (auto inim = inimigos.begin(); inim < inimigos.end();) {
 		if (inim->colide(player)) {
 			inimigos.erase(inim);
@@ -536,7 +609,7 @@ void display(void)
 		inim->desenha();
 		++inim;
 	}
-	
+
 	player.desenha();
 
 	glutSwapBuffers();
@@ -549,7 +622,7 @@ void keyboard(unsigned char key, int, int)
 		exit(0); // ESC = termina o programa
 	case ' ':
 		acelera = 1;
-	break;
+		break;
 	case 'd':
 		rotacaoc -= 3.0f;
 		if (rotacaoc <= 0.0f)
@@ -564,21 +637,21 @@ void keyboard(unsigned char key, int, int)
 		tipo_camera = 1;
 		break;
 	case '2':
-		tipo_camera = 2;	
+		tipo_camera = 2;
 		break;
 	case '3':
 		tipo_camera = 3;
 		rotacaoc = player.rotacao - 180;
 		break;
 	}
-	
 }
 
-void keyUP(unsigned char key, int, int){
+void keyUP(unsigned char key, int, int)
+{
 	switch (key) {
 	case ' ':
 		acelera = 0;
-	break;
+		break;
 	}
 }
 
