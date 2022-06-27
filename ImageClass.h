@@ -69,7 +69,7 @@ protected:
 		InicioLinhaA = 0;
 		InicioLinhaB = (sizeY-1) * TamLinha;
 
-		for( unsigned int line = 0; line < sizeY/2; line++ ) {
+		for( int line = 0; line < sizeY/2; line++ ) {
 			memcpy(ImgLineTemp, &data[InicioLinhaA],TamLinha);
 			memcpy(&data[InicioLinhaA], &data[InicioLinhaB], TamLinha);
 			memcpy(&data[InicioLinhaB], ImgLineTemp, TamLinha);
@@ -88,13 +88,8 @@ protected:
 	}
     void FillLineAddress()
     {
-        unsigned long InicioLinha, TamLinha;
-        InicioLinha = 0;
-        TamLinha = sizeX * channels;
-        //cout << "TamLinha: "<< TamLinha << endl;
-        //LineAddress[0] = data;
         LineAddress[0] = 0;
-        for( unsigned int y = 1; y < sizeY; y++ ) {
+        for( int y = 1; y < sizeY; y++ ) {
             // LineAddress[line] = LineAddress[line-1] + TamLinha;
             LineAddress[y] = (unsigned long)( y *(sizeX)* channels);
         }

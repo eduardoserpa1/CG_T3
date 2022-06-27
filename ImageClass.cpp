@@ -32,7 +32,7 @@ void ImageClass::SetColorMode()
 //
 //	Constructor
 // **********************************************************************
-ImageClass::ImageClass(int channels) {
+ImageClass::ImageClass(int) {
 	data = NULL;
 	PosX = PosY = 0;
 	zoomH = zoomV = 1;
