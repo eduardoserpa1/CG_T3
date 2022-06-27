@@ -57,8 +57,10 @@ double AccumDeltaT = 0;
 
 // MODELOS:
 Modelo playerMod = monta_arquivo("player.txt");
+Modelo capsulaMod = monta_arquivo("capsula.txt");
 
 Player player = Player(&playerMod);
+Inimigo capsula = Inimigo(Ponto(),0,&capsulaMod);
 
 float min_x, min_y;
 float max_x, max_y;
@@ -68,6 +70,10 @@ Ponto Min, Max;
 Mapa cidade = monta_arquivo_mapa("cidade.txt");
 float escala = 1.0f;
 vector<int> cores_dos_predios;
+
+vector<Ponto> ruas;
+
+vector<Inimigo> inimigos;
 
 vector<int> le_linhas(ifstream *f, int n_linha)
 {
@@ -94,6 +100,15 @@ vector<int> le_linhas(ifstream *f, int n_linha)
 		--n_linha;
 	}
 	return v;
+}
+
+std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return str;
 }
 
 Mapa monta_arquivo_mapa(string arquivo)
@@ -165,6 +180,15 @@ GLfloat difusa[] = {0.7f,0.7f,0.7f};
 GLfloat especular[] = {1.0f,1.0f,1.0f};	
 
 
+void spawn_capsula(){
+	int qtd_tile_rua = ruas.size();
+	
+	int r = rand() % qtd_tile_rua;
+
+	Inimigo capsula = Inimigo(ruas.at(r),0,&capsulaMod);
+
+	inimigos.push_back(capsula);
+}
 
 void init()
 {	
@@ -213,6 +237,12 @@ void init()
 				player_pos_inicial_x = ((i * escala) + escala/2) - (xlen * escala)/2;
 				player_pos_inicial_y = ((j * escala) + escala/2) - (ylen * escala)/2;
 			}	
+			if(cidade.at(i).at(j) == 1){
+				float x = ((i * escala) + escala/2) - (xlen * escala)/2;
+				float y = ((j * escala) + escala/2) - (ylen * escala)/2;
+				Ponto p = Ponto(x,y,0.2f);
+				ruas.push_back(p);
+			}	
 		}
 	}
 	
@@ -238,8 +268,17 @@ void init()
 
 	player.posicao = Ponto(player_pos_inicial_x,player_pos_inicial_y, 0.1f);
 
-	player.combustivel = 99999999;
+	player.combustivel = 999;
+
+	spawn_capsula();
+	spawn_capsula();
+	spawn_capsula();
+	spawn_capsula();
+	spawn_capsula();
+	spawn_capsula();
+
 }
+
 
 double nFrames = 0;
 double TempoTotal = 0;
@@ -305,12 +344,6 @@ void desenha_cidade(){
 				r = 0.2f;
 				g = 0.6f;
 				b = 0.2f;
-			}
-
-			if(id == 3){
-				r = 1.0f;
-				g = 0;
-				b = 0;
 			}
 
 			if(id > 3){
@@ -455,7 +488,7 @@ void display(void)
 
 	cout << "gas: " << player.combustivel << endl;
 
-	cout << "x: " << player.posicao.x << "   y: " << player.posicao.y << endl;
+	//cout << "x: " << player.posicao.x << "   y: " << player.posicao.y << endl;
 
 	if(player.combustivel > 0){
 		if(acelera){
@@ -493,6 +526,16 @@ void display(void)
 	glEnd();
 
 	desenha_cidade();
+	
+	for (auto inim = inimigos.begin(); inim < inimigos.end();) {
+		if (inim->colide(player)) {
+			inimigos.erase(inim);
+			player.combustivel += 100;
+			continue;
+		}
+		inim->desenha();
+		++inim;
+	}
 	
 	player.desenha();
 

@@ -35,22 +35,6 @@ void Desenha(Modelo const *coords)
 	glPopMatrix();
 }
 
-Tiro::Tiro(Ponto pos, float angulo, Modelo *mod)
-	: Instancia(mod, 1)
-{
-	this->posicao = pos;
-	this->rotacao = angulo;
-	this->escala = Ponto(0.5, 0.5, 1.0);
-	this->desenha_modelo = Desenha;
-}
-
-void Tiro::anda()
-{
-	float oposto = sin(this->rotacao * M_PI / 180) * 0.2;
-	float adjacente = cos(this->rotacao * M_PI / 180) * 0.2;
-	this->posicao = this->posicao - Ponto(adjacente, oposto);
-}
-
 bool Player::foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p)
 {
 	return this->posicao.x - p.x > max.x || this->posicao.y - p.y > max.y ||
@@ -83,12 +67,6 @@ Texto::Texto(Ponto pos, Ponto esc, Modelo *mod)
 	this->desenha_modelo = Desenha;
 }
 
-void Player::atira(std::vector<Tiro> *tiros, Modelo *tiroMod)
-{
-	if (tiros->size() < 10)
-		tiros->push_back(Tiro(this->posicao, this->rotacao, tiroMod));
-}
-
 Inimigo::Inimigo(Ponto pos, float angulo, Modelo *mod)
 	: Instancia(mod, 1) 
 {
@@ -97,11 +75,3 @@ Inimigo::Inimigo(Ponto pos, float angulo, Modelo *mod)
 	this->desenha_modelo = Desenha;
 }
 
-void Inimigo::atira(std::vector<Tiro> *tiros, Modelo *tiroMod)
-{
-	if (this->delay <= 0) {
-		tiros->push_back(Tiro(this->posicao, this->rotacao, tiroMod));
-		int r = rand() % 100;
-		this->delay = r > 0 ? r : -r;
-	}
-}

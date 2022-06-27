@@ -6,12 +6,6 @@
 #include "Instancia.h"
 #include "Ponto.h"
 
-class Tiro : public Instancia {
-    public:
-	Tiro(Ponto pos, float angulo, Modelo *mod);
-	void anda();
-};
-
 class Player : public Instancia {
     public:
 	int delay = 0;
@@ -22,15 +16,12 @@ class Player : public Instancia {
 	Player(Modelo *mod);
 
 	bool foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p);
-	void atira(std::vector<Tiro> *tiro, Modelo *tiroMods);
 	void anda();
 };
 
 class Inimigo : public Instancia {
     public:
 	Inimigo(Ponto pos, float angulo, Modelo *mod);
-	void atira(std::vector<Tiro> *tiros, Modelo *tiroMod);
-	void anda(Ponto playerPos, Ponto max, Ponto min);
 
     private:
 	int delay = 0;
