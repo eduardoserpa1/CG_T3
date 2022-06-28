@@ -48,20 +48,20 @@ Ponto InstanciaPonto(Ponto P)
 
 float calcula_raio_colisao(Modelo const *receita)
 {
+	/*
 	const auto n_lin = receita->size();
 	const auto n_col = receita->at(0).size();
 
 	float largest = 0;
 	for (unsigned long i = 0; i < n_lin; ++i) {
 		for (unsigned long j = 0; j < n_col; ++j) {
-			Color c = (*receita)[i][j];
-			if (!(c.red == 0 && c.green == 0 && c.blue == 0)) {
-				if (sqrt((i * i) + (j * j)) > largest)
-					largest = sqrt((i * i) + (j * j));
-			}
+			if (sqrt((i * i) + (j * j)) > largest)
+				largest = sqrt((i * i) + (j * j));
 		}
 	}
-	return (largest / 2.0f) * 0.1f;
+	*/
+	//return (largest / 2.0f) * 0.1f;
+	return 1.0f;
 }
 
 Instancia::Instancia(Modelo *mod, int vida)

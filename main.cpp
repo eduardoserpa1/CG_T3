@@ -50,14 +50,13 @@ using namespace std;
 
 Modelo monta_arquivo(string arquivo);
 Mapa monta_arquivo_mapa(string arquivo);
-void CriaInimigos();
 
 Temporizador T;
 double AccumDeltaT = 0;
 
 // MODELOS:
-Modelo playerMod = monta_arquivo("player.txt");
-Modelo capsulaMod = monta_arquivo("capsula.txt");
+Modelo playerMod = monta_arquivo("ferrari.tri");
+Modelo capsulaMod = monta_arquivo("cactus.tri");
 
 Player player = Player(&playerMod);
 Inimigo capsula = Inimigo(Ponto(), 0, &capsulaMod);
@@ -65,7 +64,7 @@ Inimigo capsula = Inimigo(Ponto(), 0, &capsulaMod);
 float min_x, min_y;
 float max_x, max_y;
 
-Ponto Min, Max;
+Ponto Min, Max;	
 
 Mapa cidade = monta_arquivo_mapa("cidade.txt");
 float escala = 1.0f;
@@ -114,6 +113,34 @@ std::string ReplaceAll(std::string str, const std::string &from,
 	return str;
 }
 
+vector<string> le_linhas_tri_to_string(ifstream *f, int n_linha)
+{
+	vector<string> v;
+	string line;
+
+	while (n_linha > 0) {
+		getline(*f, line);
+
+		if (line.at(0) == '#')
+			continue;
+
+		size_t pos = 0;
+		string token;
+		line = ReplaceAll(line,"  "," ");
+		while ((pos = line.find(" ")) != string::npos) {
+			token = line.substr(0, pos);
+			v.push_back(token);
+			line.erase(0, pos + 1);
+		}
+
+		if (line != " " && !line.empty())
+			v.push_back(line);
+
+		--n_linha;
+	}
+	return v;
+}
+
 Mapa monta_arquivo_mapa(string arquivo)
 {
 	ifstream myfile;
@@ -137,6 +164,7 @@ Mapa monta_arquivo_mapa(string arquivo)
 
 Modelo monta_arquivo(string arquivo)
 {
+
 	ifstream myfile;
 	myfile.open(arquivo);
 	if (!myfile.is_open()) {
@@ -145,31 +173,31 @@ Modelo monta_arquivo(string arquivo)
 	}
 
 	Modelo modelo;
+
 	int n_lin = le_linhas(&myfile, 1).at(0);
-	vector<int> matriz_cores = le_linhas(&myfile, n_lin);
 
-	vector<Color> cores;
-	for (int i = 0; i < n_lin * 4; i += 4) {
-		Color c;
-		c.red = matriz_cores.at(i + 1) / 255.0;
-		c.green = matriz_cores.at(i + 2) / 255.0;
-		c.blue = matriz_cores.at(i + 3) / 255.0;
-		cores.push_back(c);
-	}
+	for (int i = 0; i < n_lin; i++){
+		TrianguloTRI face;
 
-	vector<int> receita_tamanho = le_linhas(&myfile, 1);
-	n_lin = receita_tamanho.at(0);
-	int n_col = receita_tamanho.size() > 1 ? receita_tamanho.at(1) : n_lin;
+		vector<string> line_strip = le_linhas_tri_to_string(&myfile,1);
 
-	vector<int> matriz_receita = le_linhas(&myfile, n_lin);
+		face.p1 = Ponto(stof(line_strip.at(0)),stof(line_strip.at(1)),stof(line_strip.at(2)));
+		face.p2 = Ponto(stof(line_strip.at(3)),stof(line_strip.at(4)),stof(line_strip.at(5)));
+		face.p3 = Ponto(stof(line_strip.at(6)),stof(line_strip.at(7)),stof(line_strip.at(8)));
 
-	for (int i = 0; i < n_lin; ++i) {
-		vector<Color> linha_de_cores;
-		for (int j = 0; j < n_col; ++j) {
-			linha_de_cores.push_back(
-				cores.at(matriz_receita.at(i * n_col + j) - 1));
+		if(line_strip.at(9).length() == 8){
+			face.cor.red = stoul(line_strip.at(9).substr(2,2), nullptr, 16) / 255.0f;
+			face.cor.green = stoul(line_strip.at(9).substr(4,2), nullptr, 16) / 255.0f;
+			face.cor.blue = stoul(line_strip.at(9).substr(6,2), nullptr, 16) / 255.0f;
+		}else{
+			face.cor.red = 0.5f;
+			face.cor.green = 0;
+			face.cor.blue = 0;
 		}
-		modelo.push_back(linha_de_cores);
+		
+
+		modelo.push_back(face);
+
 	}
 
 	myfile.close();
@@ -216,6 +244,7 @@ void init()
 
 	// Habilitar o uso de texturas
 	glEnable(GL_TEXTURE_2D);
+	
 
 	CarregaTexturas();
 
@@ -250,6 +279,7 @@ void init()
 			}
 		}
 	}
+	
 
 	unsigned long max = cidade.size();
 	if (cidade.at(0).size() > max)
@@ -274,14 +304,7 @@ void init()
 	player.posicao =
 		Ponto(player_pos_inicial_x, player_pos_inicial_y, 0.1f);
 
-	player.combustivel = 999;
-
-	spawn_capsula();
-	spawn_capsula();
-	spawn_capsula();
-	spawn_capsula();
-	spawn_capsula();
-	spawn_capsula();
+	player.combustivel = 500;
 }
 
 double nFrames = 0;
@@ -309,6 +332,22 @@ void reshape(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
+
+/*
+ * Parâmetros: os pontos p1 e p2 definem o lado do quadrado que toca o chão
+ * */
+void parede(float x1, float y1, float x2, float y2, float altura,
+			Ponto const &normal)
+{
+	glBegin(GL_QUADS);
+	glNormal3f(normal.x, normal.y, normal.z);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x1, y1, altura);
+	glVertex3f(x2, y2, altura);
+	glVertex3f(x2, y2, 0);
+	glEnd();
+}
+
 
 void desenha_cidade()
 {
@@ -338,7 +377,7 @@ void desenha_cidade()
 			double g = 0.8f;
 			double b = 0.8f;
 
-			if (id == 1) {
+			if (id == 1 || id == 3) {
 				glBindTexture(GL_TEXTURE_2D,
 					      idTexturaRua[None]);
 			}
@@ -381,109 +420,30 @@ void desenha_cidade()
 				defineCor(cores_dos_predios.at(index_cor));
 				++index_cor;
 
+				const float x_small = ((escala / 4.0f) + x_len) - x_mag;
+				const float x_large = ((3.0f * escala / 4.0f) + x_len) - x_mag;
+				const float y_small = ((escala / 4.0f) + y_len) - y_mag;
+				const float y_large = ((3.0f * escala / 4.0f) + y_len) - y_mag;
+
 				// left wall
-				glBegin(GL_QUADS);
-				glNormal3f(-1, 0, 0);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					0);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					0);
-				glEnd();
+				parede(x_small, y_small, x_small, y_large, id, Ponto(-1, 0, 0));
 
 				// right wall
-				glBegin(GL_QUADS);
-				glNormal3f(1, 0, 0);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					0);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					0);
-				glEnd();
+				parede(x_large, y_small, x_large, y_large, id, Ponto(1, 0, 0));
 
 				// up wall
-				glBegin(GL_QUADS);
-				glNormal3f(0, 1, 0);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					0);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					0);
-				glEnd();
+				parede(x_small, y_large, x_large, y_large, id, Ponto(0, 1, 0));
 
 				// down wall
-				glBegin(GL_QUADS);
-				glNormal3f(0, -1, 0);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					0);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					0);
-				glEnd();
+				parede(x_small, y_small, x_large, y_small, id, Ponto(0, -1, 0));
 
 				// hoof
 				glBegin(GL_QUADS);
 				glNormal3f(0, 0, 1);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((0.0f + escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((escala - escala / 4) + y_len) - y_mag,
-					id);
-				glVertex3f(
-					((escala - escala / 4) + x_len) - x_mag,
-					((0.0f + escala / 4) + y_len) - y_mag,
-					id);
+				glVertex3f(x_small, y_small, id);
+				glVertex3f(x_small, y_large, id);
+				glVertex3f(x_large, y_large, id);
+				glVertex3f(x_small, y_small, id);
 				glEnd();
 
 			} else {
@@ -514,7 +474,8 @@ void desenha_cidade()
 }
 
 int acelera = 0;
-int rotacaoc = 0;
+int rotacaoc = -180;
+float z_terceira_pessoa = 0.0f;
 int tipo_camera = 2;
 
 void camera(float distancia_camera, float altura_camera, float z, int livre)
@@ -560,23 +521,19 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	cout << "gas: " << player.combustivel << endl;
-
-	//cout << "x: " << player.posicao.x << "   y: " << player.posicao.y << endl;
-
 	if (player.combustivel > 0) {
 		if (acelera) {
 			player.anda();
 		}
 	}
 
-	float distancia_camera = 3.0f;
-	float altura_camera = 2.0f;
+	float distancia_camera = 2.5f;
+	float altura_camera = 1.2f;
 
 	switch (tipo_camera) {
 	case 1:
 		//1a pessoa
-		camera(0.5f, 0.5f, 0.5f, 0);
+		camera(0.5f, 1.0f, 0.8f, 0);
 		break;
 	case 2:
 		//3a pessoa travada
@@ -584,7 +541,7 @@ void display(void)
 		break;
 	case 3:
 		//3a pessoa destravada
-		camera(distancia_camera, altura_camera, 0, 1);
+		camera(distancia_camera, altura_camera, z_terceira_pessoa, 1);
 		break;
 
 	default:
@@ -600,15 +557,20 @@ void display(void)
 
 	desenha_cidade();
 
+	if(inimigos.size() < 3)
+		spawn_capsula();
+
 	for (auto inim = inimigos.begin(); inim < inimigos.end();) {
 		if (inim->colide(player)) {
 			inimigos.erase(inim);
-			player.combustivel += 100;
+			player.combustivel += 300;
 			continue;
 		}
 		inim->desenha();
 		++inim;
 	}
+
+	cout << "gas: " << player.combustivel << endl;
 
 	player.desenha();
 
@@ -625,13 +587,15 @@ void keyboard(unsigned char key, int, int)
 		break;
 	case 'd':
 		rotacaoc -= 3.0f;
-		if (rotacaoc <= 0.0f)
-			rotacaoc = 360.0f;
 		break;
 	case 'a':
 		rotacaoc += 3.0f;
-		if (rotacaoc >= 360.0f)
-			rotacaoc = 0.0f;
+		break;
+	case 'w':
+		z_terceira_pessoa += 0.2f;
+		break;
+	case 's':
+		z_terceira_pessoa -= 0.2f;
 		break;
 	case '1':
 		tipo_camera = 1;
@@ -642,6 +606,7 @@ void keyboard(unsigned char key, int, int)
 	case '3':
 		tipo_camera = 3;
 		rotacaoc = player.rotacao - 180;
+		z_terceira_pessoa = 0;
 		break;
 	}
 }

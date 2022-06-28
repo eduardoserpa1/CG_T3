@@ -2,37 +2,38 @@
 
 void Desenha(Modelo const *coords)
 {
-	int x = coords->size();
-	int y = coords->at(0).size();
 
-	float x_mag = (x / 2.0) * 0.1f;
-	float y_mag = (y / 2.0) * 0.1f;
+	glRotatef(90,1,0,0);
+	glRotatef(180,0,1,0);
 
-	glPushMatrix();
-	for (int i = 0; i < x; i++) {
-		for (int j = 0; j < y; j++) {
-			float x_len = i * 0.1f;
-			float y_len = j * 0.1f;
+	glScalef(0.5f, 0.5f, 0.5f);
+	
 
-			double r = coords->at(i).at(j).red;
-			double g = coords->at(i).at(j).green;
-			double b = coords->at(i).at(j).blue;
+	for (size_t i = 0; i < coords->size(); i++)
+	{
+		TrianguloTRI t = coords->at(i);
 
-			glColor3f(r, g, b);
+		glColor3f(t.cor.red, t.cor.green, t.cor.blue);
 
-			glBegin(GL_QUADS);
-			glVertex3f((0.0f + x_len) - x_mag,
-				   (0.0f + y_len) - y_mag, 0.1f);
-			glVertex3f((0.1f + x_len) - x_mag,
-				   (0.0f + y_len) - y_mag, 0.1f);
-			glVertex3f((0.1f + x_len) - x_mag,
-				   (0.1f + y_len) - y_mag, 0.1f);
-			glVertex3f((0.0f + x_len) - x_mag,
-				   (0.1f + y_len) - y_mag, 0.1f);
-			glEnd();
-		}
+		Ponto vetor1 = t.p2 - t.p1;
+		Ponto vetor2 = t.p3 - t.p1;
+
+		Ponto normal;
+		
+		ProdVetorial(vetor1,vetor2,normal);
+
+		glBegin(GL_POLYGON);
+
+		glNormal3f(normal.x,normal.y,normal.z);
+		glVertex3f(t.p1.x, t.p1.y, t.p1.z);
+		glVertex3f(t.p2.x, t.p2.y, t.p2.z);
+		glVertex3f(t.p3.x, t.p3.y, t.p3.z);
+
+		glEnd();
 	}
-	glPopMatrix();
+	
+	
+
 }
 
 bool Player::foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p)

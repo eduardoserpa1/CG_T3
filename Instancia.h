@@ -31,7 +31,15 @@ typedef struct Color {
 	double blue = 0.0f;
 } Color;
 
-typedef vector<vector<Color> > Modelo;
+typedef struct TrianguloTRI {
+	Ponto p1 = Ponto(0,0,0);
+	Ponto p2 = Ponto(0,0,0);
+	Ponto p3 = Ponto(0,0,0);
+	Color cor;
+} TrianguloTRI;
+
+typedef vector<vector<Color> > Modelo_ANTIGO;
+typedef vector<TrianguloTRI> Modelo;
 typedef vector<vector<int> > Mapa;
 
 class Instancia {
