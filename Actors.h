@@ -28,9 +28,4 @@ class Inimigo : public Instancia {
 	float deltaT = 1.0;
 };
 
-class Texto : public Instancia {
-    public:
-	Texto(Ponto pos, Ponto esc, Modelo *mod);
-};
-
 #endif //_ACTORS_H_

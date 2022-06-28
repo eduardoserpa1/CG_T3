@@ -54,6 +54,11 @@ Mapa monta_arquivo_mapa(string arquivo);
 Temporizador T;
 double AccumDeltaT = 0;
 
+//LUZ
+GLfloat pos[] = { 2.0f, 2.0f, 1.0f };
+GLfloat ambiente[] = { 0.4f, 0.4f, 0.4f };
+GLfloat difusa[] = { 0.7f, 0.7f, 0.7f };
+
 // MODELOS:
 Modelo playerMod = monta_arquivo("ferrari.tri");
 Modelo capsulaMod = monta_arquivo("cactus.tri");
@@ -61,18 +66,26 @@ Modelo capsulaMod = monta_arquivo("cactus.tri");
 Player player = Player(&playerMod);
 Inimigo capsula = Inimigo(Ponto(), 0, &capsulaMod);
 
-float min_x, min_y;
-float max_x, max_y;
-
-Ponto Min, Max;	
-
+//PREDIOS
 Mapa cidade = monta_arquivo_mapa("cidade.txt");
 float escala = 1.0f;
 vector<int> cores_dos_predios;
 
+//CAPSULAS
 vector<Ponto> ruas;
-
 vector<Inimigo> inimigos;
+
+//CAMERA E PLAYER
+int acelera = 0;
+int rotacaoc = -180;
+float z_terceira_pessoa = 0.0f;
+int tipo_camera = 2;
+
+//LIMITES
+float min_x, min_y;
+float max_x, max_y;
+
+Ponto Min, Max;	
 
 vector<int> le_linhas(ifstream *f, int n_linha)
 {
@@ -101,8 +114,7 @@ vector<int> le_linhas(ifstream *f, int n_linha)
 	return v;
 }
 
-std::string ReplaceAll(std::string str, const std::string &from,
-		       const std::string &to)
+std::string ReplaceAll(std::string str, const std::string &from, const std::string &to)
 {
 	size_t start_pos = 0;
 	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
@@ -203,11 +215,6 @@ Modelo monta_arquivo(string arquivo)
 	myfile.close();
 	return modelo;
 }
-
-GLfloat pos[] = { 2.0f, 2.0f, 1.0f };
-GLfloat ambiente[] = { 0.4f, 0.4f, 0.4f };
-GLfloat difusa[] = { 0.7f, 0.7f, 0.7f };
-GLfloat especular[] = { 1.0f, 1.0f, 1.0f };
 
 void spawn_capsula()
 {
@@ -336,8 +343,7 @@ void reshape(int w, int h)
 /*
  * Parâmetros: os pontos p1 e p2 definem o lado do quadrado que toca o chão
  * */
-void parede(float x1, float y1, float x2, float y2, float altura,
-			Ponto const &normal)
+void parede(float x1, float y1, float x2, float y2, float altura, Ponto const &normal)
 {
 	glBegin(GL_QUADS);
 	glNormal3f(normal.x, normal.y, normal.z);
@@ -347,7 +353,6 @@ void parede(float x1, float y1, float x2, float y2, float altura,
 	glVertex3f(x2, y2, 0);
 	glEnd();
 }
-
 
 void desenha_cidade()
 {
@@ -473,11 +478,6 @@ void desenha_cidade()
 	glPopMatrix();
 }
 
-int acelera = 0;
-int rotacaoc = -180;
-float z_terceira_pessoa = 0.0f;
-int tipo_camera = 2;
-
 void camera(float distancia_camera, float altura_camera, float z, int livre)
 {
 	float oposto = sin(player.rotacao * M_PI / 180) * distancia_camera;
@@ -495,6 +495,7 @@ void camera(float distancia_camera, float altura_camera, float z, int livre)
 		oposto2 = 0;
 	if (adjacente2 > distancia_camera || adjacente2 < -distancia_camera)
 		adjacente2 = 0;
+
 	if (livre) {
 		gluLookAt(player.posicao.x + adjacente,
 			  player.posicao.y + oposto, altura_camera, //eye

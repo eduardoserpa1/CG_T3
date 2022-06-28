@@ -38,7 +38,6 @@ typedef struct TrianguloTRI {
 	Color cor;
 } TrianguloTRI;
 
-typedef vector<vector<Color> > Modelo_ANTIGO;
 typedef vector<TrianguloTRI> Modelo;
 typedef vector<vector<int> > Mapa;
 

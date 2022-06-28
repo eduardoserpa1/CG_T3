@@ -31,9 +31,6 @@ void Desenha(Modelo const *coords)
 
 		glEnd();
 	}
-	
-	
-
 }
 
 bool Player::foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p)
@@ -57,15 +54,6 @@ void Player::anda()
 		this->posicao = this->posicao - Ponto(adjacente, oposto);
 
 	this->combustivel -= 1;
-}
-
-Texto::Texto(Ponto pos, Ponto esc, Modelo *mod)
-	: Instancia(mod, 1)
-{
-	this->posicao = pos;
-	this->rotacao = -90;
-	this->escala = esc;
-	this->desenha_modelo = Desenha;
 }
 
 Inimigo::Inimigo(Ponto pos, float angulo, Modelo *mod)
