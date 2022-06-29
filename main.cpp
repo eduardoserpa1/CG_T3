@@ -53,6 +53,7 @@ Mapa monta_arquivo_mapa(string arquivo);
 
 Temporizador T;
 double AccumDeltaT = 0;
+float fps = 30;
 
 //LUZ
 GLfloat pos[] = { 2.0f, 2.0f, 1.0f };
@@ -61,14 +62,14 @@ GLfloat difusa[] = { 0.7f, 0.7f, 0.7f };
 
 // MODELOS:
 Modelo playerMod = monta_arquivo("ferrari.tri");
-Modelo capsulaMod = monta_arquivo("cactus.tri");
+Modelo capsulaMod = monta_arquivo("capsula.tri");
 
 Player player = Player(&playerMod);
 Inimigo capsula = Inimigo(Ponto(), 0, &capsulaMod);
 
-//PREDIOS
+//CIDADE
 Mapa cidade = monta_arquivo_mapa("cidade.txt");
-float escala = 1.0f;
+float escala = 10.0f;
 vector<int> cores_dos_predios;
 
 //CAPSULAS
@@ -80,6 +81,8 @@ int acelera = 0;
 int rotacaoc = -180;
 float z_terceira_pessoa = 0.0f;
 int tipo_camera = 2;
+float distancia_camera = 2.5f;
+float altura_camera = 1.5f;
 
 //LIMITES
 float min_x, min_y;
@@ -197,14 +200,14 @@ Modelo monta_arquivo(string arquivo)
 		face.p2 = Ponto(stof(line_strip.at(3)),stof(line_strip.at(4)),stof(line_strip.at(5)));
 		face.p3 = Ponto(stof(line_strip.at(6)),stof(line_strip.at(7)),stof(line_strip.at(8)));
 
-		if(line_strip.at(9).length() == 8){
+		if(line_strip.at(9).length() > 7){
 			face.cor.red = stoul(line_strip.at(9).substr(2,2), nullptr, 16) / 255.0f;
 			face.cor.green = stoul(line_strip.at(9).substr(4,2), nullptr, 16) / 255.0f;
 			face.cor.blue = stoul(line_strip.at(9).substr(6,2), nullptr, 16) / 255.0f;
 		}else{
-			face.cor.red = 0.5f;
-			face.cor.green = 0;
-			face.cor.blue = 0;
+			face.cor.red = 0.7f;
+			face.cor.green = 0.7f;
+			face.cor.blue = 0.7f;
 		}
 		
 
@@ -254,8 +257,6 @@ void init()
 	
 
 	CarregaTexturas();
-
-	escala = 10.0f;
 
 	float player_pos_inicial_x = 0;
 	float player_pos_inicial_y = 0;
@@ -320,7 +321,7 @@ double TempoTotal = 0;
 void animate()
 {
 	AccumDeltaT += T.getDeltaT();
-	if (AccumDeltaT > 1.0 / 30) {
+	if (AccumDeltaT > 1.0 / fps) {
 		AccumDeltaT = 0;
 		glutPostRedisplay();
 	}
@@ -510,6 +511,25 @@ void camera(float distancia_camera, float altura_camera, float z, int livre)
 	}
 }
 
+void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius){
+	int i;
+	int triangleAmount = 20; //# of triangles used to draw circle
+	
+	//GLfloat radius = 0.8f; //radius
+	GLfloat twicePi = 2.0f * M_PI;
+	
+	glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(x, y,0.2f); // center of circle
+		for(i = 0; i <= triangleAmount;i++) { 
+			glVertex3f(
+		            x + (radius * cos(i *  twicePi / triangleAmount)), 
+			    y + (radius * sin(i * twicePi / triangleAmount)),
+				0.2f
+			);
+		}
+	glEnd();
+}
+
 void display(void)
 {
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -527,9 +547,6 @@ void display(void)
 			player.anda();
 		}
 	}
-
-	float distancia_camera = 2.5f;
-	float altura_camera = 1.2f;
 
 	switch (tipo_camera) {
 	case 1:
@@ -574,6 +591,8 @@ void display(void)
 	cout << "gas: " << player.combustivel << endl;
 
 	player.desenha();
+
+	//drawFilledCircle(player.posicao.x,player.posicao.y,player.raio_colisao);
 
 	glutSwapBuffers();
 }
