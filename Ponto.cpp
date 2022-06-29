@@ -123,6 +123,26 @@ bool operator==(Ponto P1, Ponto P2)
 		return false;
 	return true;
 }
+bool operator>=(Ponto P1, Ponto P2)
+{
+	if (P1.x < P2.x)
+		return false;
+	if (P1.y < P2.y)
+		return false;
+	if (P1.z < P2.z)
+		return false;
+	return true;
+}
+bool operator<=(Ponto P1, Ponto P2)
+{
+	if (P1.x > P2.x)
+		return false;
+	if (P1.y > P2.y)
+		return false;
+	if (P1.z > P2.z)
+		return false;
+	return true;
+}
 Ponto operator+(Ponto P1, Ponto P2)
 {
 	Ponto temp;
@@ -148,6 +168,15 @@ Ponto operator*(Ponto P1, float k)
 	temp.x = P1.x * k;
 	temp.y = P1.y * k;
 	temp.z = P1.z * k;
+	return temp;
+}
+
+Ponto operator/(Ponto P1, float k)
+{
+	Ponto temp;
+	temp.x = P1.x / k;
+	temp.y = P1.y / k;
+	temp.z = P1.z / k;
 	return temp;
 }
 

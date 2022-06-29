@@ -33,6 +33,10 @@ void Desenha(Modelo const *coords)
 	}
 }
 
+//uma lista de minimos e maximos de cada area de grama
+//metodo para verificar se o centro do personagem esta dentro desse minimo e maximo
+//caso a posicao atual mais o ponto de movimentacao esteja dentro do minimo e maximo, ele nao efetua a movimentação
+
 bool Player::foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p)
 {
 	return this->posicao.x - p.x > max.x || this->posicao.y - p.y > max.y ||
@@ -46,14 +50,34 @@ Player::Player(Modelo *mod)
 	this->desenha_modelo = Desenha;
 }
 
-void Player::anda()
+void Player::anda(vector<Ponto> espaco, float escala)
 {
 	float oposto = sin(this->rotacao * M_PI / 180) * 0.2;
 	float adjacente = cos(this->rotacao * M_PI / 180) * 0.2;
-	if( !foraDaAreaDeDesenho(this->max,this->min,Ponto(adjacente, oposto)) )
-		this->posicao = this->posicao - Ponto(adjacente, oposto);
+	if( !foraDaAreaDeDesenho(this->max,this->min,Ponto(adjacente, oposto)) && limites_do_espaco(Ponto(adjacente, oposto),espaco,escala))
+		this->posicao = this->posicao - (Ponto(adjacente, oposto));
 
 	this->combustivel -= 1;
+
+	cout << limites_do_espaco(Ponto(adjacente, oposto),espaco,escala) << endl;
+}
+
+bool Player::limites_do_espaco(Ponto movimentacao, vector<Ponto> espaco, float escala){
+	bool r = 0;
+
+	Ponto posicao_apos_movimentacao = this->posicao - movimentacao;
+
+	for (size_t i = 0; i < espaco.size(); i++)
+	{
+		Ponto min = Ponto(espaco.at(i).x - escala/2, espaco.at(i).y - escala/2, espaco.at(i).z - escala/2);
+		Ponto max = Ponto(espaco.at(i).x + escala/2, espaco.at(i).y + escala/2, espaco.at(i).z + escala/2);
+
+		if(posicao_apos_movimentacao >= min && posicao_apos_movimentacao <= max){
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 Inimigo::Inimigo(Ponto pos, float angulo, Modelo *mod)

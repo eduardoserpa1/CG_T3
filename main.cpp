@@ -277,7 +277,7 @@ void init()
 					((j * escala) + escala / 2) -
 					(ylen * escala) / 2;
 			}
-			if (cidade.at(i).at(j) == 1) {
+			if (cidade.at(i).at(j) == 1 || cidade.at(i).at(j) == 3) {
 				float x = ((i * escala) + escala / 2) -
 					  (xlen * escala) / 2;
 				float y = ((j * escala) + escala / 2) -
@@ -511,24 +511,6 @@ void camera(float distancia_camera, float altura_camera, float z, int livre)
 	}
 }
 
-void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius){
-	int i;
-	int triangleAmount = 20; //# of triangles used to draw circle
-	
-	//GLfloat radius = 0.8f; //radius
-	GLfloat twicePi = 2.0f * M_PI;
-	
-	glBegin(GL_TRIANGLE_FAN);
-		glVertex3f(x, y,0.2f); // center of circle
-		for(i = 0; i <= triangleAmount;i++) { 
-			glVertex3f(
-		            x + (radius * cos(i *  twicePi / triangleAmount)), 
-			    y + (radius * sin(i * twicePi / triangleAmount)),
-				0.2f
-			);
-		}
-	glEnd();
-}
 
 void display(void)
 {
@@ -544,7 +526,7 @@ void display(void)
 
 	if (player.combustivel > 0) {
 		if (acelera) {
-			player.anda();
+			player.anda(ruas,escala);
 		}
 	}
 
@@ -588,11 +570,17 @@ void display(void)
 		++inim;
 	}
 
-	cout << "gas: " << player.combustivel << endl;
+	//cout << "gas: " << player.combustivel << endl;
+
+	cout << "x: " << player.posicao.x << endl;
+	cout << "y: " << player.posicao.y << endl << endl;
+
+	cout << "minimo x tile 1: " << ruas.at(0).x + (escala/2) << endl;
+	cout << "minimo y tile 1: " << ruas.at(0).y + (escala/2) << endl << endl;
+
+	//player.combustivel = 100;
 
 	player.desenha();
-
-	//drawFilledCircle(player.posicao.x,player.posicao.y,player.raio_colisao);
 
 	glutSwapBuffers();
 }

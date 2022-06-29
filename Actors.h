@@ -16,7 +16,8 @@ class Player : public Instancia {
 	Player(Modelo *mod);
 
 	bool foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p);
-	void anda();
+	void anda(vector<Ponto> espaco, float escala);
+	bool limites_do_espaco(Ponto movimentacao, vector<Ponto> espaco, float escala);
 };
 
 class Inimigo : public Instancia {
