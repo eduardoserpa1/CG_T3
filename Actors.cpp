@@ -51,9 +51,10 @@ void Player::anda(vector<Ponto> espaco, float escala)
 {
 	float oposto = sin(this->rotacao * M_PI / 180) * 0.2;
 	float adjacente = cos(this->rotacao * M_PI / 180) * 0.2;
-	if (!foraDaAreaDeDesenho(this->max, this->min, Ponto(adjacente, oposto)) &&
-		limites_do_espaco(Ponto(adjacente, oposto), espaco, escala))
-		this->posicao = this->posicao - (Ponto(adjacente, oposto) * escala);
+	Ponto movimentacao = Ponto(adjacente, oposto) * escala;
+	if (!foraDaAreaDeDesenho(this->max, this->min, movimentacao) &&
+		limites_do_espaco(movimentacao, espaco, escala))
+		this->posicao = this->posicao - movimentacao;
 
 	this->combustivel -= 1;
 
