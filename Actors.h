@@ -13,7 +13,7 @@ public:
 	Ponto max;
 	Ponto min;
 	Player(Modelo *mod);
-	void anda(vector<Ponto> espaco, float escala);
+	void anda(vector<Ponto> espaco, float escala, double delta);
 
 private:
 	bool foraDaAreaDeDesenho(Ponto max, Ponto min, Ponto p);

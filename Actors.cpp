@@ -47,18 +47,16 @@ Player::Player(Modelo *mod)
 	this->desenha_modelo = Desenha;
 }
 
-void Player::anda(vector<Ponto> espaco, float escala)
+void Player::anda(vector<Ponto> espaco, float escala, double delta)
 {
-	float oposto = sin(this->rotacao * M_PI / 180) * 0.2;
-	float adjacente = cos(this->rotacao * M_PI / 180) * 0.2;
-	Ponto movimentacao = Ponto(adjacente, oposto) * escala;
+	float oposto = sin(this->rotacao * M_PI / 180);
+	float adjacente = cos(this->rotacao * M_PI / 180);
+	Ponto movimentacao = Ponto(adjacente, oposto) * escala * delta * 9;
 	if (!foraDaAreaDeDesenho(this->max, this->min, movimentacao) &&
 		limites_do_espaco(movimentacao, espaco, escala))
 		this->posicao = this->posicao - movimentacao;
 
 	this->combustivel -= 1;
-
-	//cout << limites_do_espaco(Ponto(adjacente, oposto), espaco, escala) << endl;
 }
 
 bool Player::limites_do_espaco(Ponto movimentacao, vector<Ponto> espaco,

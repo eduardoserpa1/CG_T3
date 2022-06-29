@@ -53,7 +53,7 @@ Mapa monta_arquivo_mapa(string arquivo);
 
 Temporizador T;
 double AccumDeltaT = 0;
-float fps = 30;
+const float fps = 30;
 
 //LUZ
 GLfloat pos[] = { 2.0f, 2.0f, 1.0f };
@@ -498,6 +498,7 @@ void camera(float distancia_camera, float altura_camera, float z, int livre)
 	}
 }
 
+int old_delta = 0;
 void display(void)
 {
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -510,9 +511,13 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	int new_delta = glutGet(GLUT_ELAPSED_TIME);
+	float delta = (new_delta - old_delta) / 1000.0f;
+	old_delta = new_delta;
+
 	if (player.combustivel > 0) {
 		if (acelera) {
-			player.anda(ruas, escala);
+			player.anda(ruas, escala, delta);
 		}
 	}
 
@@ -559,13 +564,14 @@ void display(void)
 	// Apaga a tela para limpar o output
 	cout << (char)27 << "[2J";
 
+	//cout << "delta: " << delta << endl;
 	cout << "gas: " << player.combustivel << endl;
 
 	cout << "x: " << player.posicao.x << endl;
 	cout << "y: " << player.posicao.y << endl << endl;
 
-	cout << "minimo x tile 1: " << ruas.at(0).x + (escala / 2) << endl;
-	cout << "minimo y tile 1: " << ruas.at(0).y + (escala / 2) << endl << endl;
+	//cout << "minimo x tile 1: " << ruas.at(0).x + (escala / 2) << endl;
+	//cout << "minimo y tile 1: " << ruas.at(0).y + (escala / 2) << endl << endl;
 
 	//player.combustivel = 100;
 
