@@ -559,7 +559,7 @@ void display(void)
 	// Apaga a tela para limpar o output
 	cout << (char)27 << "[2J";
 
-	//cout << "gas: " << player.combustivel << endl;
+	cout << "gas: " << player.combustivel << endl;
 
 	cout << "x: " << player.posicao.x << endl;
 	cout << "y: " << player.posicao.y << endl << endl;

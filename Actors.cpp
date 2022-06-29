@@ -53,11 +53,11 @@ void Player::anda(vector<Ponto> espaco, float escala)
 	float adjacente = cos(this->rotacao * M_PI / 180) * 0.2;
 	if (!foraDaAreaDeDesenho(this->max, this->min, Ponto(adjacente, oposto)) &&
 		limites_do_espaco(Ponto(adjacente, oposto), espaco, escala))
-		this->posicao = this->posicao - (Ponto(adjacente, oposto));
+		this->posicao = this->posicao - (Ponto(adjacente, oposto) * escala);
 
 	this->combustivel -= 1;
 
-	cout << limites_do_espaco(Ponto(adjacente, oposto), espaco, escala) << endl;
+	//cout << limites_do_espaco(Ponto(adjacente, oposto), espaco, escala) << endl;
 }
 
 bool Player::limites_do_espaco(Ponto movimentacao, vector<Ponto> espaco,
