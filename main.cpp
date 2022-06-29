@@ -88,7 +88,7 @@ float altura_camera = 1.5f;
 float min_x, min_y;
 float max_x, max_y;
 
-Ponto Min, Max;	
+Ponto Min, Max;
 
 vector<int> le_linhas(ifstream *f, int n_linha)
 {
@@ -117,7 +117,8 @@ vector<int> le_linhas(ifstream *f, int n_linha)
 	return v;
 }
 
-std::string ReplaceAll(std::string str, const std::string &from, const std::string &to)
+std::string ReplaceAll(std::string str, const std::string &from,
+					   const std::string &to)
 {
 	size_t start_pos = 0;
 	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
@@ -141,7 +142,7 @@ vector<string> le_linhas_tri_to_string(ifstream *f, int n_linha)
 
 		size_t pos = 0;
 		string token;
-		line = ReplaceAll(line,"  "," ");
+		line = ReplaceAll(line, "  ", " ");
 		while ((pos = line.find(" ")) != string::npos) {
 			token = line.substr(0, pos);
 			v.push_back(token);
@@ -179,7 +180,6 @@ Mapa monta_arquivo_mapa(string arquivo)
 
 Modelo monta_arquivo(string arquivo)
 {
-
 	ifstream myfile;
 	myfile.open(arquivo);
 	if (!myfile.is_open()) {
@@ -191,28 +191,32 @@ Modelo monta_arquivo(string arquivo)
 
 	int n_lin = le_linhas(&myfile, 1).at(0);
 
-	for (int i = 0; i < n_lin; i++){
+	for (int i = 0; i < n_lin; i++) {
 		TrianguloTRI face;
 
-		vector<string> line_strip = le_linhas_tri_to_string(&myfile,1);
+		vector<string> line_strip = le_linhas_tri_to_string(&myfile, 1);
 
-		face.p1 = Ponto(stof(line_strip.at(0)),stof(line_strip.at(1)),stof(line_strip.at(2)));
-		face.p2 = Ponto(stof(line_strip.at(3)),stof(line_strip.at(4)),stof(line_strip.at(5)));
-		face.p3 = Ponto(stof(line_strip.at(6)),stof(line_strip.at(7)),stof(line_strip.at(8)));
+		face.p1 = Ponto(stof(line_strip.at(0)), stof(line_strip.at(1)),
+						stof(line_strip.at(2)));
+		face.p2 = Ponto(stof(line_strip.at(3)), stof(line_strip.at(4)),
+						stof(line_strip.at(5)));
+		face.p3 = Ponto(stof(line_strip.at(6)), stof(line_strip.at(7)),
+						stof(line_strip.at(8)));
 
-		if(line_strip.at(9).length() > 7){
-			face.cor.red = stoul(line_strip.at(9).substr(2,2), nullptr, 16) / 255.0f;
-			face.cor.green = stoul(line_strip.at(9).substr(4,2), nullptr, 16) / 255.0f;
-			face.cor.blue = stoul(line_strip.at(9).substr(6,2), nullptr, 16) / 255.0f;
-		}else{
+		if (line_strip.at(9).length() > 7) {
+			face.cor.red =
+				stoul(line_strip.at(9).substr(2, 2), nullptr, 16) / 255.0f;
+			face.cor.green =
+				stoul(line_strip.at(9).substr(4, 2), nullptr, 16) / 255.0f;
+			face.cor.blue =
+				stoul(line_strip.at(9).substr(6, 2), nullptr, 16) / 255.0f;
+		} else {
 			face.cor.red = 0.7f;
 			face.cor.green = 0.7f;
 			face.cor.blue = 0.7f;
 		}
-		
 
 		modelo.push_back(face);
-
 	}
 
 	myfile.close();
@@ -254,7 +258,6 @@ void init()
 
 	// Habilitar o uso de texturas
 	glEnable(GL_TEXTURE_2D);
-	
 
 	CarregaTexturas();
 
@@ -271,23 +274,18 @@ void init()
 				cores_dos_predios.push_back(r);
 			} else if (cidade.at(i).at(j) == 3) {
 				player_pos_inicial_x =
-					((i * escala) + escala / 2) -
-					(xlen * escala) / 2;
+					((i * escala) + escala / 2) - (xlen * escala) / 2;
 				player_pos_inicial_y =
-					((j * escala) + escala / 2) -
-					(ylen * escala) / 2;
+					((j * escala) + escala / 2) - (ylen * escala) / 2;
 			}
 			if (cidade.at(i).at(j) == 1 || cidade.at(i).at(j) == 3) {
-				float x = ((i * escala) + escala / 2) -
-					  (xlen * escala) / 2;
-				float y = ((j * escala) + escala / 2) -
-					  (ylen * escala) / 2;
+				float x = ((i * escala) + escala / 2) - (xlen * escala) / 2;
+				float y = ((j * escala) + escala / 2) - (ylen * escala) / 2;
 				Ponto p = Ponto(x, y, 0.2f);
 				ruas.push_back(p);
 			}
 		}
 	}
-	
 
 	unsigned long max = cidade.size();
 	if (cidade.at(0).size() > max)
@@ -309,8 +307,7 @@ void init()
 	player.max = Max;
 	player.min = Min;
 
-	player.posicao =
-		Ponto(player_pos_inicial_x, player_pos_inicial_y, 0.1f);
+	player.posicao = Ponto(player_pos_inicial_x, player_pos_inicial_y, 0.1f);
 
 	player.combustivel = 500;
 }
@@ -344,7 +341,8 @@ void reshape(int w, int h)
 /*
  * Parâmetros: os pontos p1 e p2 definem o lado do quadrado que toca o chão
  * */
-void parede(float x1, float y1, float x2, float y2, float altura, Ponto const &normal)
+void parede(float x1, float y1, float x2, float y2, float altura,
+			Ponto const &normal)
 {
 	glBegin(GL_QUADS);
 	glNormal3f(normal.x, normal.y, normal.z);
@@ -384,13 +382,11 @@ void desenha_cidade()
 			double b = 0.8f;
 
 			if (id == 1 || id == 3) {
-				glBindTexture(GL_TEXTURE_2D,
-					      idTexturaRua[None]);
+				glBindTexture(GL_TEXTURE_2D, idTexturaRua[None]);
 			}
 
 			if (id == 2) {
-				glBindTexture(GL_TEXTURE_2D,
-					      idTexturaRua[GRASS]);
+				glBindTexture(GL_TEXTURE_2D, idTexturaRua[GRASS]);
 				r = 0.2f;
 				g = 0.6f;
 				b = 0.2f;
@@ -402,24 +398,19 @@ void desenha_cidade()
 				b = 0.5f;
 
 				glColor3f(r, g, b);
-				glBindTexture(GL_TEXTURE_2D,
-					      idTexturaRua[FLOOR]);
+				glBindTexture(GL_TEXTURE_2D, idTexturaRua[FLOOR]);
 
 				glBegin(GL_QUADS);
 				glNormal3f(0, 0, 1);
 
 				glTexCoord2f(0, 0);
-				glVertex2f((0.0f + x_len) - x_mag,
-					   (0.0f + y_len) - y_mag);
+				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
 				glTexCoord2f(1, 0);
-				glVertex2f((escala + x_len) - x_mag,
-					   (0.0f + y_len) - y_mag);
+				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
 				glTexCoord2f(1, 1);
-				glVertex2f((escala + x_len) - x_mag,
-					   (escala + y_len) - y_mag);
+				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
 				glTexCoord2f(0, 1);
-				glVertex2f((0.0f + x_len) - x_mag,
-					   (escala + y_len) - y_mag);
+				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
 
 				glEnd();
 
@@ -459,17 +450,13 @@ void desenha_cidade()
 				glNormal3f(0, 0, 1);
 
 				glTexCoord2f(0, 0);
-				glVertex2f((0.0f + x_len) - x_mag,
-					   (0.0f + y_len) - y_mag);
+				glVertex2f((0.0f + x_len) - x_mag, (0.0f + y_len) - y_mag);
 				glTexCoord2f(1, 0);
-				glVertex2f((escala + x_len) - x_mag,
-					   (0.0f + y_len) - y_mag);
+				glVertex2f((escala + x_len) - x_mag, (0.0f + y_len) - y_mag);
 				glTexCoord2f(1, 1);
-				glVertex2f((escala + x_len) - x_mag,
-					   (escala + y_len) - y_mag);
+				glVertex2f((escala + x_len) - x_mag, (escala + y_len) - y_mag);
 				glTexCoord2f(0, 1);
-				glVertex2f((0.0f + x_len) - x_mag,
-					   (escala + y_len) - y_mag);
+				glVertex2f((0.0f + x_len) - x_mag, (escala + y_len) - y_mag);
 
 				glEnd();
 			}
@@ -498,19 +485,18 @@ void camera(float distancia_camera, float altura_camera, float z, int livre)
 		adjacente2 = 0;
 
 	if (livre) {
-		gluLookAt(player.posicao.x + adjacente,
-			  player.posicao.y + oposto, altura_camera, //eye
-			  player.posicao.x + adjacente + adjacente2,
-			  player.posicao.y + oposto + oposto2, z, //center
-			  0.0f, 1.0f, GL_HIGH_FLOAT); //up
+		gluLookAt(player.posicao.x + adjacente, player.posicao.y + oposto,
+				  altura_camera, //eye
+				  player.posicao.x + adjacente + adjacente2,
+				  player.posicao.y + oposto + oposto2, z, //center
+				  0.0f, 1.0f, GL_HIGH_FLOAT); //up
 	} else {
-		gluLookAt(player.posicao.x + adjacente,
-			  player.posicao.y + oposto, altura_camera, //eye
-			  player.posicao.x, player.posicao.y, z, //center
-			  0.0f, 1.0f, GL_HIGH_FLOAT); //up
+		gluLookAt(player.posicao.x + adjacente, player.posicao.y + oposto,
+				  altura_camera, //eye
+				  player.posicao.x, player.posicao.y, z, //center
+				  0.0f, 1.0f, GL_HIGH_FLOAT); //up
 	}
 }
-
 
 void display(void)
 {
@@ -526,7 +512,7 @@ void display(void)
 
 	if (player.combustivel > 0) {
 		if (acelera) {
-			player.anda(ruas,escala);
+			player.anda(ruas, escala);
 		}
 	}
 
@@ -557,7 +543,7 @@ void display(void)
 
 	desenha_cidade();
 
-	if(inimigos.size() < 3)
+	if (inimigos.size() < 3)
 		spawn_capsula();
 
 	for (auto inim = inimigos.begin(); inim < inimigos.end();) {
@@ -570,13 +556,16 @@ void display(void)
 		++inim;
 	}
 
+	// Apaga a tela para limpar o output
+	cout << (char)27 << "[2J";
+
 	//cout << "gas: " << player.combustivel << endl;
 
 	cout << "x: " << player.posicao.x << endl;
 	cout << "y: " << player.posicao.y << endl << endl;
 
-	cout << "minimo x tile 1: " << ruas.at(0).x + (escala/2) << endl;
-	cout << "minimo y tile 1: " << ruas.at(0).y + (escala/2) << endl << endl;
+	cout << "minimo x tile 1: " << ruas.at(0).x + (escala / 2) << endl;
+	cout << "minimo y tile 1: " << ruas.at(0).y + (escala / 2) << endl << endl;
 
 	//player.combustivel = 100;
 
