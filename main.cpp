@@ -53,7 +53,7 @@ Mapa monta_arquivo_mapa(string arquivo);
 
 Temporizador T;
 double AccumDeltaT = 0;
-const float fps = 30;
+const float fps = 60;
 
 //LUZ
 GLfloat pos[] = { 2.0f, 2.0f, 1.0f };
@@ -68,8 +68,8 @@ Player player = Player(&playerMod);
 Inimigo capsula = Inimigo(Ponto(), 0, &capsulaMod);
 
 //CIDADE
-Mapa cidade = monta_arquivo_mapa("cidade.txt");
-float escala = 10.0f;
+Mapa cidade = monta_arquivo_mapa("cidade4.txt");
+float escala = 5.0f;
 vector<int> cores_dos_predios;
 
 //CAPSULAS
@@ -78,11 +78,12 @@ vector<Inimigo> inimigos;
 
 //CAMERA E PLAYER
 int acelera = 0;
+int direction = 0;
 int rotacaoc = -180;
 float z_terceira_pessoa = 0.0f;
 int tipo_camera = 2;
-float distancia_camera = 2.5f;
-float altura_camera = 1.5f;
+float distancia_camera = 4.5f;
+float altura_camera = 3.0f;
 
 //LIMITES
 float min_x, min_y;
@@ -168,6 +169,8 @@ Mapa monta_arquivo_mapa(string arquivo)
 
 	Mapa cidade;
 	int n_lin = le_linhas(&myfile, 1).at(0);
+
+	cout << n_lin << endl;
 
 	for (int i = 0; i < n_lin; i++) {
 		vector<int> linha = le_linhas(&myfile, 1);
@@ -309,7 +312,7 @@ void init()
 
 	player.posicao = Ponto(player_pos_inicial_x, player_pos_inicial_y, 0.1f);
 
-	player.combustivel = 500;
+	player.combustivel = 2000;
 }
 
 double nFrames = 0;
@@ -371,6 +374,7 @@ void desenha_cidade()
 
 	glPushMatrix();
 	for (int i = 0; i < x; i++) {
+		y = cidade.at(i).size();
 		for (int j = 0; j < y; j++) {
 			float x_len = i * escala;
 			float y_len = j * escala;
@@ -501,7 +505,7 @@ void camera(float distancia_camera, float altura_camera, float z, int livre)
 int old_delta = 0;
 void display(void)
 {
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(135 / 255.0f, 213 / 255.0f, 255 / 255.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
@@ -512,6 +516,7 @@ void display(void)
 	glLoadIdentity();
 
 	int new_delta = glutGet(GLUT_ELAPSED_TIME);
+
 	float delta = (new_delta - old_delta) / 1000.0f;
 	old_delta = new_delta;
 
@@ -520,6 +525,10 @@ void display(void)
 			player.anda(ruas, escala, delta);
 		}
 	}
+
+	
+
+	player.rotacao += (direction*-1) * 2.5;
 
 	switch (tipo_camera) {
 	case 1:
@@ -548,7 +557,7 @@ void display(void)
 
 	desenha_cidade();
 
-	if (inimigos.size() < 3)
+	if (inimigos.size() < 100)
 		spawn_capsula();
 
 	for (auto inim = inimigos.begin(); inim < inimigos.end();) {
@@ -573,7 +582,7 @@ void display(void)
 	//cout << "minimo x tile 1: " << ruas.at(0).x + (escala / 2) << endl;
 	//cout << "minimo y tile 1: " << ruas.at(0).y + (escala / 2) << endl << endl;
 
-	//player.combustivel = 100;
+	//player.combustivel = 100;	
 
 	player.desenha();
 
@@ -585,6 +594,9 @@ void keyboard(unsigned char key, int, int)
 	switch (key) {
 	case 27:
 		exit(0); // ESC = termina o programa
+	case 'v':
+		acelera = 1;
+		break;
 	case ' ':
 		acelera = 1;
 		break;
@@ -617,26 +629,38 @@ void keyboard(unsigned char key, int, int)
 void keyUP(unsigned char key, int, int)
 {
 	switch (key) {
-	case ' ':
+	case 'v':
 		acelera = 0;
 		break;
 	}
 }
+
 
 void arrow_keys(int a_keys, int, int)
 {
 	// OBSERVACAO: As rotacoes presumem que o 'normal' eh
 	// o objeto apontando para cima
 	switch (a_keys) {
+
+	case GLUT_KEY_RIGHT:
+		direction = 1;
+		break;
 	case GLUT_KEY_LEFT:
-		player.rotacao += 3.0f;
-		if (player.rotacao >= 360.0f)
-			player.rotacao = 0.0f;
+		direction = -1;
+		break;
+	
+	}
+}
+void arrow_keys_up(int a_keys, int, int)
+{
+	// OBSERVACAO: As rotacoes presumem que o 'normal' eh
+	// o objeto apontando para cima
+	switch (a_keys) {
+	case GLUT_KEY_LEFT:
+			direction = 0;
 		break;
 	case GLUT_KEY_RIGHT:
-		player.rotacao -= 3.0f;
-		if (player.rotacao <= 0.0f)
-			player.rotacao = 360.0f;
+			direction = 0;
 		break;
 	}
 }
@@ -661,6 +685,7 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(keyboard);
 	glutKeyboardUpFunc(keyUP);
 	glutSpecialFunc(arrow_keys);
+	glutSpecialUpFunc(arrow_keys_up);
 
 	glutMainLoop();
 

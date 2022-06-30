@@ -51,7 +51,7 @@ void Player::anda(vector<Ponto> espaco, float escala, double delta)
 {
 	float oposto = sin(this->rotacao * M_PI / 180);
 	float adjacente = cos(this->rotacao * M_PI / 180);
-	Ponto movimentacao = Ponto(adjacente, oposto) * escala * delta * 9;
+	Ponto movimentacao = Ponto(adjacente, oposto) * escala * delta * 10;
 	if (!foraDaAreaDeDesenho(this->max, this->min, movimentacao) &&
 		limites_do_espaco(movimentacao, espaco, escala))
 		this->posicao = this->posicao - movimentacao;
